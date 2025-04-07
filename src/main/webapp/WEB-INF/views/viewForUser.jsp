@@ -8,13 +8,28 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
+<style>
+  @media print {
+    @page {
+      size: auto;
+      margin: 0;
+    }
+
+    .page-header,
+    .page-footer,
+    .buttons {
+      display: none !important;
+    }
+
+  }
+</style>
 <head>
     <title>Просмотр обращения</title>
 </head>
 <body>
   <div class="buttons">
     <a href="/appeal/list">Вернуться к списку</a>
-    <a>Распечатать</a>
+    <a href="" onclick="window.print()">Распечатать</a>
   </div>
   <div>
     <p>UUID: ${appeal.uuid}</p>
@@ -24,6 +39,7 @@
     <p>Тема: ${appeal.topic}</p>
     <p>Содержимое: ${appeal.content}</p>
     <p>Статус: ${appeal.status}</p>
+    <p>Было распечатано: ${appeal.printer}</p>
 
     <c:if test="${not empty appeal.resolution}">
       <p>Резолюция: ${appeal.resolution}</p>
@@ -32,6 +48,9 @@
     <c:if test="${not empty appeal.notes}">
       <p>Примечания: ${appeal.notes}</p>
     </c:if>
+  </div>
+  <div>
+    <img src="${qrCode}" alt="QR обращения">
   </div>
 </body>
 </html>

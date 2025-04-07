@@ -2,7 +2,11 @@ package com.appBase.config;
 
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletRegistration;
+
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
+import org.springframework.web.filter.CharacterEncodingFilter;
+import javax.servlet.Filter;
 
 public class WebInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
 
@@ -31,5 +35,13 @@ public class WebInitializer extends AbstractAnnotationConfigDispatcherServletIni
                         0
                 )
         );
+    }
+
+    @Override
+    protected Filter[] getServletFilters() {
+        CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
+        characterEncodingFilter.setEncoding("UTF-8");
+        characterEncodingFilter.setForceEncoding(true);
+        return new Filter[] { characterEncodingFilter };
     }
 }

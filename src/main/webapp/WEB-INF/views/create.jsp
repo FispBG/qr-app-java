@@ -6,15 +6,18 @@
   Time: 23:30
   To change this template use File | Settings | File Templates.
 --%>
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<meta charset="UTF-8">
+
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
 <head>
     <title>Создание обращения</title>
 </head>
 <body>
+    <a href="/appeal/list" class="btn btn-secondary">На основную страницу</a>
     <h1>Создание обращения</h1>
-    <form:form action="save" method="post" modelAttribute="appeal">
+    <form:form action="save" method="post" modelAttribute="appeal" accept-charset="UTF-8">
         <div class="form-group">
             <label for="applicantName">ФИО заявителя:</label>
             <form:input path="applicantName" class="form-group" required="true"/>
@@ -37,7 +40,6 @@
         </div>
 
         <button type="submit" class="btn btn-primary">Сохранить</button>
-        <a href="/appeal/list" class="btn btn-secondary">Отмена</a>
     </form:form>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>

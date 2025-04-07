@@ -38,6 +38,9 @@ public class Appeal {
     @Column(name = "notes", length = 2000)
     private String notes;
 
+    @Column(name = "printer")
+    private Boolean printer;
+
     // Getters and Setters
 
     public Long getId() {
@@ -120,6 +123,14 @@ public class Appeal {
         this.notes = notes;
     }
 
+    public Boolean getPrinter() {
+        return printer;
+    }
+
+    public void setPrinter(Boolean printer) {
+        this.printer = printer;
+    }
+
     @Override
     public String toString() {
         return "id:" + id +
@@ -131,7 +142,8 @@ public class Appeal {
                 " content:" + content +
                 " resolution:" + resolution +
                 " status:" + status +
-                " notes:" + notes;
+                " notes:" + notes +
+                " printer:" + printer;
     }
 
     public static Appeal fromString(String data) {
@@ -175,6 +187,9 @@ public class Appeal {
                     break;
                 case "notes":
                     petition.setNotes(value);
+                    break;
+                case "printer":
+                    petition.setPrinter(Boolean.parseBoolean(value));
                     break;
             }
         }

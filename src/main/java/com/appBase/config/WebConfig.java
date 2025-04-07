@@ -29,4 +29,13 @@ public class WebConfig implements WebMvcConfigurer {
         StandardServletMultipartResolver multipartResolver = new StandardServletMultipartResolver();
         return multipartResolver;
     }
+
+    @Bean
+    public FilterRegistrationBean<AdminAuthFilter> adminAuthFilterRegistration() {
+        FilterRegistrationBean<AdminAuthFilter> registrationBean = new FilterRegistrationBean<>();
+        registrationBean.setFilter(new AdminAuthFilter());
+        registrationBean.addUrlPatterns("/admin/*");
+        registrationBean.setOrder(1); // приоритет, если у вас несколько фильтров
+        return registrationBean;
+    }
 }

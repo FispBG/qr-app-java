@@ -1,6 +1,5 @@
 package com.appBase.dao;
 
-
 import com.appBase.pojo.Appeal;
 import com.appBase.util.AppealStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +25,9 @@ public class AppealDao {
     }
 
     public List<Appeal> getNewAppeals(){
-        Query<Appeal> query = getCurrentSession().createQuery("from Appeal where status = :status", Appeal.class);
-        query.setParameter("status", AppealStatus.CREATED);
+        Query<Appeal> query = getCurrentSession().createQuery("from Appeal where status = 'Создано'", Appeal.class);
+//        query.setParameter("status", AppealStatus.CREATED);
+        System.out.println(query.list());
         return query.list();
     }
 

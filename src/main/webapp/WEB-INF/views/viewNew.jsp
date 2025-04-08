@@ -5,7 +5,6 @@
 <head>
   <title>Просмотр новых заявок</title>
   <style>
-    /* Стили для модального окна */
     .modal {
       display: none;
       position: fixed;

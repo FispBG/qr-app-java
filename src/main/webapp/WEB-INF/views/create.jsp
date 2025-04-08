@@ -15,7 +15,7 @@
     <title>Создание обращения</title>
 </head>
 <body>
-    <a href="/appeal/list" class="btn btn-secondary">На основную страницу</a>
+    <a href="/" class="btn btn-secondary">На основную страницу</a>
     <h1>Создание обращения</h1>
     <form:form action="save" method="post" modelAttribute="appeal" accept-charset="UTF-8">
         <div class="form-group">

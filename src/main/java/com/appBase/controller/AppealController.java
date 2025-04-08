@@ -19,12 +19,6 @@ public class AppealController {
     @Autowired
     private QrService qrService;
 
-    @GetMapping("/list")
-    public String list(Model model) {
-        model.addAttribute("appeals", appService.getAppeals());
-        return "list";
-    }
-
     @GetMapping("/{id}")
     public String show(@PathVariable Long id, Model model) {
         Appeal appeal = appService.getAppealById(id);

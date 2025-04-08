@@ -40,8 +40,8 @@
 </style>
     <h1>Выбор опции</h1>
     <div class="buttons">
-        <a href="/appeal/create">Создать обращений</a>
-        <button onclick="openModal('modal-1')">Рассмотреть</button>
+        <a href="appeal/create">Создать обращений</a>
+<%--        onclick="openModal('modal-1')"--%>
         <div id="modal-1" class="modal">
             <div class="modal-content">
                 <span class="close-button" onclick="closeModal('modal-1')">&times;</span>
@@ -56,7 +56,7 @@
             </div>
         </div>
         <a href="/appeal/check">Узнать состояние обращения</a>
-        <a href="/appeal/admin">Панель работника</a>
+        <a href="/admin/list">Панель работника</a>
     </div>
 </body>
 </html>

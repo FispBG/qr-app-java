@@ -16,16 +16,6 @@ public class AppealController {
 
     @Autowired
     private AppService appService;
-    @Autowired
-    private QrService qrService;
-
-    @GetMapping("/{id}")
-    public String show(@PathVariable Long id, Model model) {
-        Appeal appeal = appService.getAppealById(id);
-        model.addAttribute("appeal",appeal);
-        model.addAttribute("qrCode",qrService.generateQRCodeImageBase64(appeal));
-        return "viewForUser";
-    }
 
     @PostMapping("/save")
     public String save(@ModelAttribute("appeal") Appeal appeal) {
@@ -41,19 +31,5 @@ public class AppealController {
         return "create";
     }
 
-    @GetMapping("/viewNew")
-    public String viewNew(Model model) {
-        model.addAttribute("appeals",appService.getNewAppeal());
-        model.addAttribute("appeal",new Appeal());
-        return "viewNew";
-    }
-
-
-    @PostMapping("/update")
-    public String update(@ModelAttribute("appeal") Appeal appeal) {
-        appeal.setPrinter(false);
-        appService.updateAppeal(appeal);
-        return "redirect:/appeal/viewNew";
-    }
 
 }

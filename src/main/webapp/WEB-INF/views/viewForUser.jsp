@@ -28,7 +28,7 @@
 </head>
 <body>
   <div class="buttons">
-    <a href="/appeal/list">Вернуться к списку</a>
+    <a href="/admin/list">Вернуться к списку</a>
     <a href="" onclick="window.print()">Распечатать</a>
   </div>
   <div>
@@ -48,6 +48,43 @@
     <c:if test="${not empty appeal.notes}">
       <p>Примечания: ${appeal.notes}</p>
     </c:if>
+  </div>
+  <button onclick="openModal('modal-${appeal.id}')">Рассмотреть</button>
+
+  <!-- Модальное окно -->
+  <div id="modal-${appeal.id}" class="modal">
+    <div class="modal-content">
+      <span class="close-button" onclick="closeModal('modal-${appeal.id}')">&times;</span>
+      <h1>Заключение</h1>
+      <form action="update" method="post">
+        <input type="hidden" name="id" value="${appeal.id}"/>
+        <input type="hidden" name="uuid" value="${appeal.uuid}"/>
+        <input type="hidden" name="applicantName" value="${appeal.applicantName}"/>
+        <input type="hidden" name="managerName" value="${appeal.managerName}"/>
+        <input type="hidden" name="address" value="${appeal.address}"/>
+        <input type="hidden" name="topic" value="${appeal.topic}"/>
+        <input type="hidden" name="content" value="${appeal.content}"/>
+
+        <div class="form-group">
+          <select name="status">
+            <option value="Рассмотрено">Рассмотрено</option>
+            <option value="Отклонено">Отклонено</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="resolution">Резолюция</label>
+          <input type="text" name="resolution" required="true"/>
+        </div>
+
+        <div class="form-group">
+          <label for="notes">Примечание</label>
+          <input type="text" name="notes"/>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+      </form>
+    </div>
   </div>
   <div>
     <img src="${qrCode}" alt="QR обращения">

@@ -37,7 +37,7 @@
   </style>
 </head>
 <body>
-<a href="/appeal/list">Вернуться к списку</a>
+<a href="/admin/list">Вернуться к списку</a>
 <table>
   <thead>
   <tr>

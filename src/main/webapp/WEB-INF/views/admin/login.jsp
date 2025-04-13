@@ -11,7 +11,7 @@
     <title>Вход сотрудника</title>
 </head>
 <body>
-    <a href="/">Вернуться в меню</a>
+    <a href="/">Обратно в меню</a>
     <h1>Вход сотрудника</h1>
     <form action="login" method="post">
         <div>

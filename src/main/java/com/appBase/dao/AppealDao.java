@@ -25,9 +25,14 @@ public class AppealDao {
     }
 
     public List<Appeal> getNewAppeals(){
-        Query<Appeal> query = getCurrentSession().createQuery("from Appeal where status = 'Создано'", Appeal.class);
-//        query.setParameter("status", AppealStatus.CREATED);
-        System.out.println(query.list());
+        Query<Appeal> query = getCurrentSession().createQuery("from Appeal where status = :status", Appeal.class);
+        query.setParameter("status", AppealStatus.CREATED);
+        return query.list();
+    }
+
+    public List<Appeal> getCreatedAndNotPrintedAppeals(){
+        Query<Appeal> query = getCurrentSession().createQuery("from Appeal where status = :status and printer = false", Appeal.class);
+        query.setParameter("status", AppealStatus.CREATED);
         return query.list();
     }
 
@@ -60,6 +65,27 @@ public class AppealDao {
         }
     }
 
+    public List<Appeal> getAppealByName(String name) {
+        Query<Appeal> query = getCurrentSession().createQuery("from Appeal where applicant_name = :name", Appeal.class);
+        query.setParameter("name", name);
+        return query.list();
+    }
+
+    public List<Appeal> getReviewedAndNotPrintedAppeals(){
+        Query<Appeal> query = getCurrentSession().createQuery("from Appeal where (status = :status1 or status = :status2) and printer = false", Appeal.class);
+        query.setParameter("status1", AppealStatus.REVIEWED);
+        query.setParameter("status2", AppealStatus.REJECTED);
+        return query.list();
+    }
+
+    public void markAsPrinted(List<Long> ids){
+        for (Long id : ids){
+            Appeal appeal = getAppealById(id);
+            appeal.setPrinter(true);
+            getCurrentSession().saveOrUpdate(appeal);
+        }
+    }
+
     public void updateAppeal(Appeal appeal) {
         Appeal temp = getAppealByUuid(appeal.getUuid());
         if (appeal != null) {
@@ -71,11 +97,10 @@ public class AppealDao {
             temp.setResolution(appeal.getResolution());
             temp.setStatus(appeal.getStatus());
             temp.setNotes(appeal.getNotes());
-
+            temp.setPrinter(appeal.getPrinter());
             getCurrentSession().update(temp);
         }else{
             getCurrentSession().save(appeal);
         }
-
     }
 }

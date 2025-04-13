@@ -36,6 +36,10 @@ public class AppService {
         return appealDao.getAppealByUuid(uuid);
     }
 
+    public List<Appeal> getCreatedAndNotPrintedAppeals(){
+        return appealDao.getCreatedAndNotPrintedAppeals();
+    }
+
     public void saveAppeal(Appeal appeal) {
         appealDao.saveAppeal(appeal);
     }
@@ -51,5 +55,16 @@ public class AppService {
     public void updateAppealFromQrData(String qrData) {
         Appeal appeal = Appeal.fromString(qrData);
         appealDao.updateAppeal(appeal);
+    }
+    public List<Appeal> getReviewedAndNotPrintedAppeals() {
+        return appealDao.getReviewedAndNotPrintedAppeals();
+    }
+
+    public void markAsPrinted(List<Long> ids) {
+        appealDao.markAsPrinted(ids);
+    }
+
+    public List<Appeal> getAppealByName(String name) {
+        return appealDao.getAppealByName(name);
     }
 }

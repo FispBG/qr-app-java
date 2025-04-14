@@ -45,6 +45,7 @@
     <div class="print-controls">
         <a href="/admin/list" class="button back-button">Вернуться к списку</a>
         <button class="button" onclick="printDocuments()">Печать заявлений</button>
+        <a href="/admin/download" class="button back-button">Скачать обращения</a>
     </div>
 
     <form id="printForm" action="/admin/mark-as-printed" method="post">
@@ -52,6 +53,8 @@
             <input type="hidden" name="ids" value="${appeal.id}">
         </c:forEach>
     </form>
+
+
 </div>
 
 <c:choose>

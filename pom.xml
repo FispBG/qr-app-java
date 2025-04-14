@@ -118,6 +118,18 @@
       <artifactId>spring-core</artifactId>
       <version>${spring.version}</version>
     </dependency>
+
+    <dependency>
+      <groupId>org.xhtmlrenderer</groupId>
+      <artifactId>flying-saucer-core</artifactId>
+      <version>9.1.22</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.xhtmlrenderer</groupId>
+      <artifactId>flying-saucer-pdf-openpdf</artifactId>
+      <version>9.1.22</version>
+    </dependency>
   </dependencies>
 
   <build>

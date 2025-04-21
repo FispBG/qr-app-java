@@ -103,4 +103,29 @@ public class AppealDao {
             getCurrentSession().save(appeal);
         }
     }
+
+    public void updateFromQr(String str){
+            Appeal forSave = Appeal.fromString(str);
+            forSave.setPrinter(false);
+
+            Query<Appeal> query = getCurrentSession().createQuery(
+                    "from Appeal where applicantName =: applicantName and managerName =: managerName " +
+                            "and address =: address and topic =: topic and content =: content", Appeal.class);
+            query.setParameter("applicantName", forSave.getApplicantName());
+            query.setParameter("managerName", forSave.getManagerName());
+            query.setParameter("address", forSave.getAddress());
+            query.setParameter("topic", forSave.getTopic());
+            query.setParameter("content", forSave.getContent());
+
+            List<Appeal> existingAppeals = query.list();
+
+            if (!existingAppeals.isEmpty()) {
+                Appeal existingAppeal = existingAppeals.get(0);
+                forSave.setId(existingAppeal.getId());
+                getCurrentSession().merge(forSave);
+            } else {
+                forSave.setId(null);
+                getCurrentSession().save(forSave);
+            }
+    }
 }

@@ -67,4 +67,8 @@ public class AppService {
     public List<Appeal> getAppealByName(String name) {
         return appealDao.getAppealByName(name);
     }
+
+    public void updateFromQr(String qrData) {
+        appealDao.updateFromQr(qrData);
+    }
 }

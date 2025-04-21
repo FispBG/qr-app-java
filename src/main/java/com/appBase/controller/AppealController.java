@@ -35,16 +35,20 @@ public class AppealController {
     }
 
     @PostMapping("/save")
-    public String save(@ModelAttribute("appeal") Appeal appeal) {
+    public String save(@ModelAttribute("appeal") Appeal appeal, @RequestParam(value = "list", required = false) Boolean list) {
         appeal.setStatus(AppealStatus.CREATED);
         appeal.setPrinter(false);
         appService.saveAppeal(appeal);
+        if (list){
+            return "redirect:/admin/list";
+        }
         return "redirect:/";
     }
 
     @GetMapping("/create")
     public String create(Model model) {
         model.addAttribute("appeal",new Appeal());
+        model.addAttribute("list",false);
         return "create";
     }
 

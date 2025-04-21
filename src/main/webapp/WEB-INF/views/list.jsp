@@ -40,15 +40,15 @@
   </c:if>
   <c:if test="${officeId == 1}">
     <a href="/admin/logout">Выйти из панель работника</a>
-    <a href="/appeal/create">Создать новое обращение</a>
+    <a href="/admin/create">Создать новое обращение</a>
     <a href="/admin/viewCreated">Печать новых обращений</a>
-    <a>Сканировать Qr-код</a>
+    <a href="/admin/scan">Сканировать Qr-код</a>
   </c:if>
   <c:if test="${officeId == 2}">
     <a href="/admin/logout">Выйти из панель работника</a>
     <a href="/admin/viewNew">Просмотр на рассмотрение</a>
     <a href="/admin/viewReviewed">Печать рассмотренных заявлений</a>
-    <a>Сканировать Qr-код</a>
+    <a href="/admin/scan">Сканировать Qr-код</a>
   </c:if>
 </div>
 <h1>Список заявлений</h1>

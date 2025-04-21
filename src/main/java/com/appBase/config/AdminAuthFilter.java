@@ -18,7 +18,6 @@ public class AdminAuthFilter implements Filter {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         HttpSession session = httpRequest.getSession(false);
         String uri = httpRequest.getRequestURI();
-
         if (!uri.startsWith(httpRequest.getContextPath() + "/admin/")) {
             chain.doFilter(request, response);
             return;

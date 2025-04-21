@@ -17,7 +17,7 @@
 <body>
     <a href="/" class="btn btn-secondary">Обратно в меню</a>
     <h1>Создание обращения</h1>
-    <form:form action="save" method="post" modelAttribute="appeal" accept-charset="UTF-8">
+    <form:form action="/appeal/save" method="post" modelAttribute="appeal" accept-charset="UTF-8">
         <div class="form-group">
             <label for="applicantName">ФИО заявителя:</label>
             <form:input path="applicantName" class="form-group" required="true"/>
@@ -38,7 +38,7 @@
             <label for="content">Содержание обращения:</label>
             <form:input path="content" class="form-group" required="true"/>
         </div>
-
+        <input type="hidden" name="list" value="${list}">
         <button type="submit" class="btn btn-primary">Сохранить</button>
     </form:form>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

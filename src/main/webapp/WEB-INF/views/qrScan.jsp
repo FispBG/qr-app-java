@@ -1,4 +1,3 @@
-<%-- Файл: src/main/webapp/WEB-INF/views/qrScan.jsp --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
@@ -6,18 +5,21 @@
 <html>
 <head>
     <title>QR-код декодер</title>
+    <link href="${pageContext.request.contextPath}/css/global.css" rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
+<a href="/admin/list" class="back-button">Вернуться к списку</a>
+
 <h1>QR-код декодер</h1>
 
 <div class="upload-container">
     <h2>Загрузите изображение с QR-кодом</h2>
-    <%-- Форма отправляет POST запрос на /admin/decode --%>
     <form method="POST" action="<c:url value='/admin/decode'/>" enctype="multipart/form-data">
-        <input type="file" name="image" accept="image/*" required>
-        <br>
+        <div class="file-input-container">
+            <input type="file" name="image" accept="image/*" required>
+        </div>
         <button type="submit" class="button">Распознать QR-код</button>
     </form>
 </div>

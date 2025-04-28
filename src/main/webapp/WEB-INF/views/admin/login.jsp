@@ -9,20 +9,23 @@
 <html>
 <head>
     <title>Вход сотрудника</title>
+    <link href="${pageContext.request.contextPath}/css/global.css" rel="stylesheet">
 </head>
 <body>
-    <a href="/">Обратно в меню</a>
+<a href="/" class="btn btn-secondary">Обратно в меню</a>
+<div class="login-container">
     <h1>Вход сотрудника</h1>
-    <form action="login" method="post">
-        <div>
+    <form action="login" method="post" class="login-form">
+        <div class="form-group">
             <label for="username">Логин:</label>
-            <input type="text" id="username" name="username" required>
+            <input type="text" id="username" name="username" required class="login-input">
         </div>
-        <div>
+        <div class="form-group">
             <label for="password">Пароль:</label>
-            <input type="text" id="password" name="password" required>
+            <input type="password" id="password" name="password" required class="login-input">
         </div>
-        <button type="submit">Войти</button>
+        <button type="submit" class="btn btn-primary login-button">Войти</button>
     </form>
+</div>
 </body>
 </html>

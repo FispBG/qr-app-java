@@ -1,7 +1,11 @@
 package com.appBase.pojo;
 
 import javax.persistence.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Entity
 @Table(name = "appealsBase")
@@ -147,53 +151,45 @@ public class Appeal {
     }
 
     public static Appeal fromString(String data) {
-        Appeal petition = new Appeal();
-        String[] parts = data.split(" ");
+        Appeal appeal = new Appeal();
 
-        for (String part : parts) {
-            String[] keyValue = part.split(":", 2);
-            if (keyValue.length != 2) continue;
+        Pattern pattern = Pattern.compile("(\\w+):(.*?)(?=\\s+\\w+:|$)", Pattern.DOTALL);
+        Matcher matcher = pattern.matcher(data);
 
-            String key = keyValue[0].trim();
-            String value = keyValue[1].trim();
+        Map<String, String> keyValuePairs = new HashMap<>();
+        while (matcher.find()) {
+            String key = matcher.group(1);
+            String value = matcher.group(2).trim();
+            System.out.println("Найдено поле: " + key + " = " + value);
+            keyValuePairs.put(key, value);
+        }
 
-            switch (key) {
-                case "id":
-                    petition.setId(Long.parseLong(value));
-                    break;
-                case "uuid":
-                    petition.setUuid(value);
-                    break;
-                case "applicantName":
-                    petition.setApplicantName(value);
-                    break;
-                case "managerName":
-                    petition.setManagerName(value);
-                    break;
-                case "address":
-                    petition.setAddress(value);
-                    break;
-                case "topic":
-                    petition.setTopic(value);
-                    break;
-                case "content":
-                    petition.setContent(value);
-                    break;
-                case "resolution":
-                    petition.setResolution(value);
-                    break;
-                case "status":
-                    petition.setStatus(value);
-                    break;
-                case "notes":
-                    petition.setNotes(value);
-                    break;
-                case "printer":
-                    petition.setPrinter(Boolean.parseBoolean(value));
-                    break;
+        System.out.println("Все найденные ключ-значения: " + keyValuePairs);
+
+        if (keyValuePairs.containsKey("id")) {
+            try {
+                appeal.setId(Long.parseLong(keyValuePairs.get("id")));
+            } catch (NumberFormatException e) {
+                System.err.println("Ошибка парсинга ID: " + e.getMessage());
             }
         }
 
-        return petition;
+        appeal.setUuid(keyValuePairs.getOrDefault("uuid", UUID.randomUUID().toString()));
+        appeal.setApplicantName(keyValuePairs.getOrDefault("applicantName", ""));
+        appeal.setManagerName(keyValuePairs.getOrDefault("managerName", ""));
+        appeal.setAddress(keyValuePairs.getOrDefault("address", ""));
+        appeal.setTopic(keyValuePairs.getOrDefault("topic", ""));
+
+        String content = keyValuePairs.getOrDefault("content", "");
+        appeal.setContent(content);
+
+        appeal.setResolution(keyValuePairs.getOrDefault("resolution", null));
+        appeal.setStatus(keyValuePairs.getOrDefault("status", "Создано"));
+        appeal.setNotes(keyValuePairs.getOrDefault("notes", null));
+
+        String printer = keyValuePairs.getOrDefault("printer", "false");
+        appeal.setPrinter(Boolean.parseBoolean(printer));
+
+        return appeal;
     }
 }

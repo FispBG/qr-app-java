@@ -75,7 +75,7 @@ public class AdminController {
     }
 
     @GetMapping("/viewCreated")
-    public String printCreated(Model model) {
+    public String printCreated(Model model,HttpSession session) {
         List<Appeal> reviewedAppeals = appService.getCreatedAndNotPrintedAppeals();
 
         Map<Long, String> qrCodes = new HashMap<>();
@@ -85,12 +85,13 @@ public class AdminController {
 
         model.addAttribute("appeals", reviewedAppeals);
         model.addAttribute("qrCodes", qrCodes);
+        model.addAttribute("office", session.getAttribute("officeId"));
         System.out.println(reviewedAppeals);
         return "printReviewed";
     }
 
     @GetMapping("/viewReviewed")
-    public String printReviewed(Model model) {
+    public String printReviewed(Model model,HttpSession session) {
         List<Appeal> reviewedAppeals = appService.getReviewedAndNotPrintedAppeals();
 
         Map<Long, String> qrCodes = new HashMap<>();
@@ -100,14 +101,18 @@ public class AdminController {
 
         model.addAttribute("appeals", reviewedAppeals);
         model.addAttribute("qrCodes", qrCodes);
+        model.addAttribute("office", session.getAttribute("officeId"));
         System.out.println(reviewedAppeals);
         return "printReviewed";
     }
 
     @PostMapping("/mark-as-printed")
-    public String markAsPrinted(@RequestParam List<Long> ids, RedirectAttributes redirectAttributes) {
+    public String markAsPrinted(@RequestParam List<Long> ids,@RequestParam int idOffice, RedirectAttributes redirectAttributes) {
         appService.markAsPrinted(ids);
         redirectAttributes.addFlashAttribute("message", "Заявления успешно отмечены как распечатанные");
+        if (idOffice == 1){
+            return "redirect:/admin/viewCreated";
+        }
         return "redirect:/admin/viewReviewed";
     }
 
@@ -118,9 +123,16 @@ public class AdminController {
     }
 
     @GetMapping("/download")
-    public ResponseEntity<byte[]> download(@RequestParam(required = false) Long id, Model model) {
+    public ResponseEntity<byte[]> download(@RequestParam Long idOffice,@RequestParam Long id, Model model) {
         try {
-            List<Appeal> appeals = appService.getCreatedAndNotPrintedAppeals();
+            List<Appeal> appeals = new ArrayList<>();
+            if (idOffice == 1){
+                appeals = appService.getCreatedAndNotPrintedAppeals();
+            }else if (idOffice == 2){
+                appeals = appService.getReviewedAndNotPrintedAppeals();
+            }else if (idOffice == 322){
+                appeals.add(appService.getAppealById(id));
+            }
             if (appeals.isEmpty()) {
                 return ResponseEntity.noContent().build();
             }
@@ -198,9 +210,10 @@ public class AdminController {
     }
 
     @GetMapping("/create")
-    public String create(Model model) {
+    public String create(Model model,HttpSession session) {
         model.addAttribute("appeal",new Appeal());
         model.addAttribute("list",true);
+        model.addAttribute("officeId", session.getAttribute("officeId"));
         return "create";
     }
 }

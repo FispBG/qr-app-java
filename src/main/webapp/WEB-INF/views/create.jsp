@@ -7,8 +7,8 @@
 --%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<meta charset="UTF-8">
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<meta charset="UTF-8">
 <html>
 <head>
     <title>Создание обращения</title>
@@ -16,7 +16,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-    <a href="/" class="btn btn-secondary">Обратно в меню</a>
+    <c:if test = "${not empty officeId}">
+        <a href="/admin/list" class="btn btn-secondary">Обратно в меню</a>
+    </c:if>
+    <c:if test = "${empty officeId}">
+        <a href="/" class="btn btn-secondary">Обратно в меню</a>
+    </c:if>
     <h1>Создание обращения</h1>
     <form:form action="/appeal/save" method="post" modelAttribute="appeal" accept-charset="UTF-8" cssClass="appeal-form">
         <div class="applicant-fields">

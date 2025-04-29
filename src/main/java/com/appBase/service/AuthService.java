@@ -11,8 +11,6 @@ public class AuthService {
 
     private String username1="", password1="", username2="", password2="";
 
-    private ResourceLoader resourceLoader;
-
     public AuthService() {
         loadAdmin();
     }

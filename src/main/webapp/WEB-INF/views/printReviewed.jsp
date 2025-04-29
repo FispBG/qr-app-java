@@ -11,16 +11,15 @@
 <div class="container">
     <h1 class="no-print">Печать рассмотренных заявлений</h1>
 
-    <!-- Общая кнопка печати -->
     <div class="controls-container no-print">
-        <a href="/admin/download" class="download-link">Скачать обращения</a>
+        <a href="/admin/download?idOffice=${office}" class="download-link">Скачать обращения</a>
         <button class="print-button" onclick="printDocuments()">Печать заявлений</button>
+        <button class="print-button" onclick="markAsPrinted()">Отметить как напечатанные</button>
     </div>
 
     <form id="printForm" action="/admin/mark-as-printed" method="post">
-        <c:forEach items="${appeals}" var="appeal">
-            <input type="hidden" name="ids" value="${appeal.id}">
-        </c:forEach>
+        <input type="hidden" name="ids" value="<c:forEach items="${appeals}" var="appeal" varStatus="status">${appeal.id}<c:if test="${!status.last}">,</c:if></c:forEach>">
+        <input type="hidden" name="idOffice" value="${office}">
     </form>
 
     <c:choose>
@@ -94,14 +93,11 @@
             printRequested = true;
         });
 
-        window.addEventListener('afterprint', function() {
-            if (printRequested) {
-                document.getElementById('printForm').submit();
-                printRequested = false;
-            }
-        });
-
         window.print();
+    }
+
+    function markAsPrinted() {
+        document.getElementById('printForm').submit();
     }
 
     function toggleMenu() {

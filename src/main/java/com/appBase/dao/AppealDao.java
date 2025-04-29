@@ -79,10 +79,12 @@ public class AppealDao {
     }
 
     public void markAsPrinted(List<Long> ids){
-        for (Long id : ids){
-            Appeal appeal = getAppealById(id);
-            appeal.setPrinter(true);
-            getCurrentSession().saveOrUpdate(appeal);
+        if(!ids.isEmpty()){
+            for (Long id : ids){
+                Appeal appeal = getAppealById(id);
+                appeal.setPrinter(true);
+                getCurrentSession().saveOrUpdate(appeal);
+            }
         }
     }
 
@@ -104,28 +106,26 @@ public class AppealDao {
         }
     }
 
-    public void updateFromQr(String str){
-            Appeal forSave = Appeal.fromString(str);
-            forSave.setPrinter(false);
+    public void updateFromQr(String str) {
+        Appeal forSave = Appeal.fromString(str);
+        forSave.setPrinter(false);
 
-            Query<Appeal> query = getCurrentSession().createQuery(
-                    "from Appeal where applicantName =: applicantName and managerName =: managerName " +
-                            "and address =: address and topic =: topic and content =: content", Appeal.class);
-            query.setParameter("applicantName", forSave.getApplicantName());
-            query.setParameter("managerName", forSave.getManagerName());
-            query.setParameter("address", forSave.getAddress());
-            query.setParameter("topic", forSave.getTopic());
-            query.setParameter("content", forSave.getContent());
+        Appeal existingAppeal = getAppealByUuid(forSave.getUuid());
 
-            List<Appeal> existingAppeals = query.list();
+        if (existingAppeal != null) {
+            existingAppeal.setApplicantName(forSave.getApplicantName());
+            existingAppeal.setManagerName(forSave.getManagerName());
+            existingAppeal.setAddress(forSave.getAddress());
+            existingAppeal.setTopic(forSave.getTopic());
+            existingAppeal.setContent(forSave.getContent());
+            existingAppeal.setResolution(forSave.getResolution());
+            existingAppeal.setStatus(forSave.getStatus());
+            existingAppeal.setNotes(forSave.getNotes());
+            existingAppeal.setPrinter(false);
 
-            if (!existingAppeals.isEmpty()) {
-                Appeal existingAppeal = existingAppeals.get(0);
-                forSave.setId(existingAppeal.getId());
-                getCurrentSession().merge(forSave);
-            } else {
-                forSave.setId(null);
-                getCurrentSession().save(forSave);
-            }
+            getCurrentSession().update(existingAppeal);
+        } else {
+            getCurrentSession().save(forSave);
+        }
     }
 }

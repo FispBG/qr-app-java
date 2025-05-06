@@ -3,10 +3,7 @@ package com.appBase.controller;
 import com.appBase.pojo.Appeal;
 import com.appBase.service.AppService;
 import com.appBase.service.QrService;
-import com.appBase.util.AppealStatus;
 import com.google.zxing.*;
-import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
-import com.google.zxing.common.HybridBinarizer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -17,24 +14,21 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpSession;
-import javax.swing.*;
-import javax.swing.text.html.HTMLEditorKit;
-import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.Buffer;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+/**
+ * Контроллер для административной части приложения
+ * Управляет заявлениями, их просмотром и обработкой
+ */
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
@@ -44,6 +38,9 @@ public class AdminController {
     @Autowired
     private QrService qrService;
 
+    /**
+     * Отображает список всех заявлений
+     */
     @GetMapping("/list")
     public String list(Model model, HttpSession session) {
         model.addAttribute("appeals", appService.getAppeals());
@@ -51,13 +48,19 @@ public class AdminController {
         return "list";
     }
 
+    /**
+     * Отображает новые заявления
+     */
     @GetMapping("/viewNew")
     public String viewNew(Model model) {
-        model.addAttribute("appeals",appService.getNewAppeal());
-        model.addAttribute("appeal",new Appeal());
+        model.addAttribute("appeals", appService.getNewAppeal());
+        model.addAttribute("appeal", new Appeal());
         return "viewNew";
     }
 
+    /**
+     * Обновляет информацию о заявлении
+     */
     @PostMapping("/update")
     public String update(@ModelAttribute("appeal") Appeal appeal) {
         appeal.setPrinter(false);
@@ -65,17 +68,23 @@ public class AdminController {
         return "redirect:/admin/viewNew";
     }
 
+    /**
+     * Показывает детали заявления по ID
+     */
     @GetMapping("/{id}")
     public String show(@PathVariable Long id, Model model, HttpSession session) {
         Appeal appeal = appService.getAppealById(id);
-        model.addAttribute("appeal",appeal);
-        model.addAttribute("qrCode",qrService.generateQRCodeImageBase64(appeal));
+        model.addAttribute("appeal", appeal);
+        model.addAttribute("qrCode", qrService.generateQRCodeImageBase64(appeal));
         model.addAttribute("officeId", session.getAttribute("officeId"));
         return "viewForUser";
     }
 
+    /**
+     * Отображает созданные, но не распечатанные заявления
+     */
     @GetMapping("/viewCreated")
-    public String printCreated(Model model,HttpSession session) {
+    public String printCreated(Model model, HttpSession session) {
         List<Appeal> reviewedAppeals = appService.getCreatedAndNotPrintedAppeals();
 
         Map<Long, String> qrCodes = new HashMap<>();
@@ -90,8 +99,11 @@ public class AdminController {
         return "printReviewed";
     }
 
+    /**
+     * Отображает проверенные, но не распечатанные заявления
+     */
     @GetMapping("/viewReviewed")
-    public String printReviewed(Model model,HttpSession session) {
+    public String printReviewed(Model model, HttpSession session) {
         List<Appeal> reviewedAppeals = appService.getReviewedAndNotPrintedAppeals();
 
         Map<Long, String> qrCodes = new HashMap<>();
@@ -106,43 +118,52 @@ public class AdminController {
         return "printReviewed";
     }
 
+    /**
+     * Помечает заявления как распечатанные
+     */
     @PostMapping("/mark-as-printed")
-    public String markAsPrinted(@RequestParam List<Long> ids,@RequestParam int idOffice, RedirectAttributes redirectAttributes) {
+    public String markAsPrinted(@RequestParam List<Long> ids, @RequestParam int idOffice, RedirectAttributes redirectAttributes) {
         appService.markAsPrinted(ids);
         redirectAttributes.addFlashAttribute("message", "Заявления успешно отмечены как распечатанные");
-        if (idOffice == 1){
+        if (idOffice == 1) {
             return "redirect:/admin/viewCreated";
         }
         return "redirect:/admin/viewReviewed";
     }
 
+    /**
+     * Удаляет заявление
+     */
     @PostMapping("/delete")
     public String delete(@ModelAttribute("appeal") Appeal appeal) {
         appService.deleteAppeal(appService.getAppealById(appeal.getId()));
         return "redirect:/admin/list";
     }
 
+    /**
+     * Скачивает заявления в архиве
+     */
     @GetMapping("/download")
-    public ResponseEntity<byte[]> download(@RequestParam Long idOffice,@RequestParam Long id, Model model) {
+    public ResponseEntity<byte[]> download(@RequestParam(required = false) Long idOffice, @RequestParam Long id, Model model) {
         try {
             List<Appeal> appeals = new ArrayList<>();
-            if (idOffice == 1){
+            if (idOffice == 1) {
                 appeals = appService.getCreatedAndNotPrintedAppeals();
-            }else if (idOffice == 2){
+            } else if (idOffice == 2) {
                 appeals = appService.getReviewedAndNotPrintedAppeals();
-            }else if (idOffice == 322){
+            } else if (idOffice == 322) {
                 appeals.add(appService.getAppealById(id));
             }
             if (appeals.isEmpty()) {
                 return ResponseEntity.noContent().build();
             }
 
+            // Создаем ZIP-архив
             ByteArrayOutputStream bas = new ByteArrayOutputStream();
             ZipOutputStream zos = new ZipOutputStream(bas);
 
             for (Appeal appeal : appeals) {
                 String qrCode = qrService.generateQRCodeImageBase64(appeal);
-
                 byte[] bytes = qrService.generateAppealImage(appeal, qrCode);
 
                 String filename = String.format("appeal_%d_%s.png", appeal.getId(), qrService.cleanFileName(appeal.getApplicantName()));
@@ -153,22 +174,28 @@ public class AdminController {
             }
             zos.close();
 
+            // Настройка заголовков для скачивания
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
             headers.setContentDispositionFormData("attachment", "appeals.zip");
 
             return new ResponseEntity<>(bas.toByteArray(), headers, HttpStatus.OK);
-        }catch (Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
-
+    /**
+     * Отображает форму для сканирования QR-кода
+     */
     @GetMapping("/scan")
     public String showScanForm(Model model) {
         return "qrScan";
     }
 
+    /**
+     * Декодирует QR-код из загруженного изображения
+     */
     @PostMapping("/decode")
     public String decode(@RequestParam("image") MultipartFile file, Model model) {
         if (file == null || file.isEmpty()) {
@@ -176,8 +203,7 @@ public class AdminController {
             return "qrScan";
         }
 
-        try (InputStream inputStream = file.getInputStream()){
-
+        try (InputStream inputStream = file.getInputStream()) {
             BufferedImage bufferedImage = ImageIO.read(inputStream);
             if (bufferedImage == null) {
                 System.err.println("Не удалось прочитать изображение.");
@@ -203,16 +229,22 @@ public class AdminController {
         return "qrScan";
     }
 
+    /**
+     * Сохраняет заявление из данных QR-кода
+     */
     @PostMapping("/saveAppealQr")
     public String saveAppealQr(@ModelAttribute("appeal") String appeal) {
         appService.updateFromQr(appeal);
         return "redirect:/admin/list";
     }
 
+    /**
+     * Отображает форму создания нового заявления
+     */
     @GetMapping("/create")
-    public String create(Model model,HttpSession session) {
-        model.addAttribute("appeal",new Appeal());
-        model.addAttribute("list",true);
+    public String create(Model model, HttpSession session) {
+        model.addAttribute("appeal", new Appeal());
+        model.addAttribute("list", true);
         model.addAttribute("officeId", session.getAttribute("officeId"));
         return "create";
     }

@@ -14,6 +14,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import javax.sql.DataSource;
 import java.util.Properties;
 
+/**
+ * Конфигурация Hibernate для работы с базой данных
+ */
 @Configuration
 @EnableTransactionManagement
 @ComponentScan({"com.appBase"})
@@ -23,6 +26,9 @@ public class HibernateConfig {
     @Autowired
     private Environment environment;
 
+    /**
+     * Настройка фабрики сессий Hibernate
+     */
     @Bean
     public LocalSessionFactoryBean sessionFactory() {
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
@@ -32,6 +38,9 @@ public class HibernateConfig {
         return sessionFactory;
     }
 
+    /**
+     * Настройка источника данных
+     */
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
@@ -42,6 +51,9 @@ public class HibernateConfig {
         return dataSource;
     }
 
+    /**
+     * Настройка свойств Hibernate
+     */
     private Properties hibernateProperties() {
         Properties properties = new Properties();
         properties.put("hibernate.dialect", environment.getRequiredProperty("hibernate.dialect"));
@@ -53,6 +65,9 @@ public class HibernateConfig {
         return properties;
     }
 
+    /**
+     * Настройка менеджера транзакций
+     */
     @Bean
     public HibernateTransactionManager transactionManager() {
         HibernateTransactionManager transManager = new HibernateTransactionManager();

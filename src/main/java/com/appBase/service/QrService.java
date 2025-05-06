@@ -2,14 +2,12 @@ package com.appBase.service;
 
 import com.google.zxing.*;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
-import com.google.zxing.client.j2se.MatrixToImageConfig;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.appBase.pojo.Appeal;
 import org.springframework.stereotype.Service;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.text.html.HTMLEditorKit;
@@ -17,19 +15,20 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.*;
 
 @Service
 public class QrService {
 
+    // Стандартные размеры QR-кода
     private static final int QR_WIDTH = 300;
     private static final int QR_HEIGHT = 300;
 
+    // Генерация QR-кода для заявления и возврат в виде строки Base64
     public String generateQRCode(Appeal appeal){
         try{
             Map<EncodeHintType, Object> hints = new HashMap<>();
-            hints.put(EncodeHintType.CHARACTER_SET, "Windows-1251");
+            hints.put(EncodeHintType.CHARACTER_SET, "Windows-1251"); // Использование кодировки Windows-1251 для кириллицы
 
             QRCodeWriter qrCodeWriter = new QRCodeWriter();
             BitMatrix bitMatrix = qrCodeWriter.encode(
@@ -48,23 +47,26 @@ public class QrService {
         }
     }
 
+    // Генерация QR-кода как URL-данных для вставки в HTML
     public String generateQRCodeImageBase64(Appeal appeal) {
         String base64Image = generateQRCode(appeal);
         return "data:image/png;base64," + base64Image;
     }
 
+    // Генерация полного изображения заявления со встроенным QR-кодом
     public byte[] generateAppealImage(Appeal appeal, String qrCode) throws Exception {
         String html = generateAppealHtml(appeal);
 
-        BufferedImage appealImage = convertHtmlToPng(html);
-        BufferedImage qrImage = decodeQr(qrCode);
-        BufferedImage combine = combineIm(appealImage, qrImage);
+        BufferedImage appealImage = convertHtmlToPng(html); // Преобразование HTML в изображение
+        BufferedImage qrImage = decodeQr(qrCode);           // Декодирование QR-кода в изображение
+        BufferedImage combine = combineIm(appealImage, qrImage); // Объединение обоих изображений
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ImageIO.write(combine, "png", baos);
         return baos.toByteArray();
     }
 
+    // Генерация HTML-представления заявления
     private String generateAppealHtml(Appeal appeal) {
         StringBuilder html = new StringBuilder();
         html.append("<!DOCTYPE html><html><head>");
@@ -113,7 +115,7 @@ public class QrService {
                     .append(appeal.getNotes()).append("</div>");
         }
 
-        // Добавляем пространство для QR-кода, но сам QR-код добавим позже
+        // Добавление места для QR-кода (будет добавлен позже)
         html.append("<div class=\"qr-code\">");
         html.append("<div class=\"qr-code-title\">QR-код:</div>");
         html.append("<div style=\"width:150px; height:150px;\"></div>");
@@ -124,7 +126,8 @@ public class QrService {
         return html.toString();
     }
 
-    private BufferedImage  convertHtmlToPng(String html) throws Exception {
+    // Преобразование HTML в PNG-изображение с помощью Swing
+    private BufferedImage convertHtmlToPng(String html) throws Exception {
         JEditorPane jep = new JEditorPane("text/html", html);
         jep.setSize(800, 1200);
 
@@ -142,11 +145,13 @@ public class QrService {
         return image;
     }
 
+    // Очистка имени файла для безопасных операций с файловой системой
     public String cleanFileName(String input) {
         if (input == null) return "unknown";
         return input.replaceAll("[^a-zA-Zа-яА-Я0-9\\-]", "_");
     }
 
+    // Декодирование QR-кода из Base64 в изображение
     private BufferedImage decodeQr(String input) throws Exception {
         String decodedString = input;
         if(decodedString.startsWith("data:image")) {
@@ -158,6 +163,7 @@ public class QrService {
         return ImageIO.read(bais);
     }
 
+    // Объединение изображения заявления с изображением QR-кода
     private BufferedImage combineIm(BufferedImage appealIm, BufferedImage qrIm) throws Exception {
         BufferedImage combined = new BufferedImage(appealIm.getWidth(), appealIm.getHeight(), BufferedImage.TYPE_INT_ARGB);
 
@@ -165,8 +171,9 @@ public class QrService {
         g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         g.drawImage(appealIm, 0, 0, null);
 
+        // Позиционирование QR-кода
         int qrX = 325;
-        int qrY = 320;
+        int qrY = 350;
         int qrSize = 150;
 
         g.drawImage(qrIm, qrX, qrY + 3* (qrSize/2)/2, qrSize, qrSize, null);
@@ -175,6 +182,7 @@ public class QrService {
         return combined;
     }
 
+    // Чтение данных QR-кода из изображения
     public String decodeQrCodeImg(BufferedImage bufferedImage) throws NotFoundException {
         if (bufferedImage == null) {
             System.err.println("Переданное в decodeQrCodeImg изображение равно null.");
@@ -185,7 +193,7 @@ public class QrService {
         BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
 
         Map<DecodeHintType, Object> hints = new EnumMap<>(DecodeHintType.class);
-        hints.put(DecodeHintType.TRY_HARDER, Boolean.TRUE);
+        hints.put(DecodeHintType.TRY_HARDER, Boolean.TRUE); // Более тщательное распознавание
         hints.put(DecodeHintType.POSSIBLE_FORMATS, EnumSet.of(BarcodeFormat.QR_CODE));
 
         hints.put(DecodeHintType.CHARACTER_SET, "UTF-8");

@@ -1,4 +1,4 @@
-package com.appBase.config; // Убедитесь, что пакет правильный
+package com.appBase.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -9,16 +9,25 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+/**
+ * Конфигурация Spring MVC
+ */
 @Configuration
 @EnableWebMvc
 @ComponentScan(basePackages = "com.appBase")
 public class WebConfig implements WebMvcConfigurer {
 
+    /**
+     * Настройка представлений (JSP)
+     */
     @Override
     public void configureViewResolvers(ViewResolverRegistry registry) {
         registry.jsp("/WEB-INF/views/", ".jsp");
     }
 
+    /**
+     * Настройка обработчиков статических ресурсов
+     */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/resources/**")
@@ -27,6 +36,9 @@ public class WebConfig implements WebMvcConfigurer {
                 .addResourceLocations("classpath:/css/");
     }
 
+    /**
+     * Настройка обработчика загрузки файлов
+     */
     @Bean
     public StandardServletMultipartResolver multipartResolver() {
         return new StandardServletMultipartResolver();

@@ -3,7 +3,7 @@
 <html>
 <head>
   <title>Просмотр обращения</title>
-<%--  <link href="${pageContext.request.contextPath}/css/global.css" rel="stylesheet">--%>
+  <%--  <link href="${pageContext.request.contextPath}/css/global.css" rel="stylesheet">--%>
   <style>
     /* Переменные */
     :root {

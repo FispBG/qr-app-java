@@ -14,28 +14,33 @@ import java.util.List;
 public class AppealDao {
 
     @Autowired
-    private SessionFactory sessionFactory;
+    private SessionFactory sessionFactory; // Для управления сессиями Hibernate
 
+    // Получение текущей сессии базы данных
     private Session getCurrentSession() {
         return sessionFactory.getCurrentSession();
     }
 
+    // Получение всех заявлений из базы данных
     public List<Appeal> getAllAppeals(){
         return getCurrentSession().createQuery("from Appeal").list();
     }
 
+    // Получение только заявлений со статусом CREATED
     public List<Appeal> getNewAppeals(){
         Query<Appeal> query = getCurrentSession().createQuery("from Appeal where status = :status", Appeal.class);
         query.setParameter("status", AppealStatus.CREATED);
         return query.list();
     }
 
+    // Получение заявлений со статусом CREATED, которые не были распечатаны
     public List<Appeal> getCreatedAndNotPrintedAppeals(){
         Query<Appeal> query = getCurrentSession().createQuery("from Appeal where status = :status and printer = false", Appeal.class);
         query.setParameter("status", AppealStatus.CREATED);
         return query.list();
     }
 
+    // Получение рассмотренных и отклоненных заявлений
     public List<Appeal> getReviewedAppeals(){
         Query<Appeal> query = getCurrentSession().createQuery("from Appeal where status = :status1 or status = :status2", Appeal.class);
         query.setParameter("status1", AppealStatus.REVIEWED);
@@ -43,14 +48,17 @@ public class AppealDao {
         return query.list();
     }
 
+    // Поиск заявления по его ID
     public Appeal getAppealById(Long id){
         return getCurrentSession().get(Appeal.class, id);
     }
 
+    // Сохранение нового заявления в базу данных
     public void saveAppeal(Appeal appeal) {
         getCurrentSession().save(appeal);
     }
 
+    // Поиск заявления по его UUID
     public Appeal getAppealByUuid(String uuid){
         Query query = getCurrentSession().createQuery("from Appeal where uuid = :uuid");
         query.setParameter("uuid", uuid);
@@ -58,6 +66,7 @@ public class AppealDao {
         return appeals.isEmpty() ? null : appeals.get(0);
     }
 
+    // Удаление заявления по его ID
     public void deleteAppeal(Long id) {
         Appeal appeal = getCurrentSession().get(Appeal.class, id);
         if (appeal != null) {
@@ -65,12 +74,14 @@ public class AppealDao {
         }
     }
 
+    // Поиск заявлений по имени заявителя
     public List<Appeal> getAppealByName(String name) {
         Query<Appeal> query = getCurrentSession().createQuery("from Appeal where applicant_name = :name", Appeal.class);
         query.setParameter("name", name);
         return query.list();
     }
 
+    // Получение рассмотренных или отклоненных заявлений, которые не были распечатаны
     public List<Appeal> getReviewedAndNotPrintedAppeals(){
         Query<Appeal> query = getCurrentSession().createQuery("from Appeal where (status = :status1 or status = :status2) and printer = false", Appeal.class);
         query.setParameter("status1", AppealStatus.REVIEWED);
@@ -78,6 +89,7 @@ public class AppealDao {
         return query.list();
     }
 
+    // Отметка нескольких заявлений как распечатанных по их ID
     public void markAsPrinted(List<Long> ids){
         if(!ids.isEmpty()){
             for (Long id : ids){
@@ -88,6 +100,7 @@ public class AppealDao {
         }
     }
 
+    // Обновление существующего заявления или сохранение нового
     public void updateAppeal(Appeal appeal) {
         Appeal temp = getAppealByUuid(appeal.getUuid());
         if (appeal != null) {
@@ -106,6 +119,7 @@ public class AppealDao {
         }
     }
 
+    // Обновление заявления из данных QR-кода
     public void updateFromQr(String str) {
         Appeal forSave = Appeal.fromString(str);
         forSave.setPrinter(false);

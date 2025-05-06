@@ -8,16 +8,25 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import javax.servlet.http.HttpSession;
 
+/**
+ * Контроллер для аутентификации пользователей
+ */
 @Controller
 public class AuthController {
 
     private AuthService authService = new AuthService();
 
+    /**
+     * Отображает форму входа
+     */
     @GetMapping("/admin/login")
     public String showForm(Model model) {
         return "admin/login";
     }
 
+    /**
+     * Обрабатывает запрос на вход в систему
+     */
     @PostMapping("/admin/login")
     public String login(@RequestParam String username, @RequestParam String password,
                         @RequestParam(required = false) Integer officeId,
@@ -26,6 +35,7 @@ public class AuthController {
         boolean authenticated = false;
         int office = 0;
 
+        // Проверка учетных данных для разных офисов
         if (authService.authenticateOffice1(username, password)) {
             authenticated = true;
             office = 1;
@@ -35,6 +45,7 @@ public class AuthController {
         }
 
         if (authenticated) {
+            // Сохранение информации о пользователе в сессии
             session.setAttribute("officeId", office);
             session.setAttribute("authenticated", true);
             return "redirect:/admin/list";
@@ -43,6 +54,9 @@ public class AuthController {
         }
     }
 
+    /**
+     * Выход из системы
+     */
     @GetMapping("admin/logout")
     public String logout(HttpSession session) {
         session.invalidate();

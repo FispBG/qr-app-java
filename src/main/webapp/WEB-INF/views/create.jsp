@@ -1,237 +1,92 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: Fisp
-  Date: 03.04.2025
-  Time: 23:30
-  To change this template use File | Settings | File Templates.
---%>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Создание обращения</title>
+    <link href="${pageContext.request.contextPath}/css/global.css" rel="stylesheet">
     <style>
-        :root {
-            --primary-blue: #1a73e8;
-            --light-blue: #e8f0fe;
-            --accent-color: #ff6b6b;
-            --text-color: #333;
-            --light-gray: #f5f5f5;
-            --input-gray: #f0f0f0;
-            --border-radius: 8px;
-            --box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            --box-shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        body {
-            font-family: 'Roboto', Arial, sans-serif;
-            background-color: white;
-            color: var(--text-color);
-            line-height: 1.6;
-            margin: 0;
-            padding: 0;
-        }
-
-        h1 {
-            color: var(--primary-blue);
-            text-align: center;
-            margin: 60px 0 30px;
-            font-weight: 500;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            border: none;
-            border-radius: var(--border-radius);
-            font-size: 16px;
-            font-weight: 500;
-            text-align: center;
-            text-decoration: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: var(--box-shadow);
-            vertical-align: middle;
-            box-sizing: border-box;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--box-shadow-hover);
-            text-decoration: none;
-        }
-
-        .btn-primary {
-            background-color: var(--primary-blue);
-            color: white;
-            padding: 12px 25px;
-        }
-
-        .btn-primary:hover {
-            background-color: #0d62d0;
-        }
-
-        .btn-secondary {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            padding: 8px 16px;
-            background-color: #6c757d;
-            color: white;
-            font-size: 14px;
-            z-index: 100;
-            border-radius: var(--border-radius);
-            text-decoration: none;
-            transition: all 0.3s ease;
-            box-shadow: var(--box-shadow);
-        }
-
-        .btn-secondary:hover {
-            background-color: #5a6268;
-            transform: translateY(-1px);
-            text-decoration: none;
-            color: white;
-        }
-
-        .appeal-form {
-            max-width: 800px;
-            margin: 0 auto 40px;
-            padding: 30px;
-            background-color: white;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-        }
-
-        .applicant-fields {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-
-        .applicant-fields .form-group {
-            flex: 1;
-            margin-bottom: 0;
-        }
-
-        .address-topic-fields {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--text-color);
-            font-weight: 500;
-        }
-
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: var(--border-radius);
-            box-sizing: border-box;
-            font-size: 16px;
-            background-color: var(--input-gray);
-            color: var(--text-color);
-            font-family: 'Roboto', Arial, sans-serif;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--primary-blue);
-            box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
-        }
-
-        .content-field textarea {
-            height: 150px;
-            resize: vertical;
-        }
-
-        .submit-container {
-            text-align: center;
-            margin-top: 30px;
-        }
-
-        .submit-container button {
-            min-width: 200px;
-        }
-
-        @media (max-width: 768px) {
-            .applicant-fields {
-                flex-direction: column;
-                gap: 15px;
-            }
-
-            .appeal-form {
-                padding: 20px;
-                margin: 0 15px 30px;
-            }
-
-            h1 {
-                margin: 50px 0 25px;
-                font-size: 24px;
-            }
-
-            .btn-secondary {
-                position: relative;
-                top: 15px;
-                left: 15px;
-                display: inline-block;
-                margin-bottom: 20px;
-            }
+        .appeal-form { max-width: 700px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;}
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input[type="text"], .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .form-group textarea { min-height: 100px; resize: vertical; }
+        .submit-container { text-align: center; margin-top: 20px; }
+        .btn-primary { background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        .btn-primary:hover { background-color: #0056b3; }
+        .btn-secondary { display: inline-block; margin-bottom:20px; text-decoration: none; background-color: #6c757d; color: white; padding: 8px 15px; border-radius: 4px; }
+        .btn-secondary:hover { background-color: #545b62; }
+        .applicant-fields, .address-topic-fields { display: flex; justify-content: space-between; gap: 20px; }
+        .applicant-fields .form-group, .address-topic-fields .form-group { flex: 1; }
+        @media (max-width: 600px) {
+            .applicant-fields, .address-topic-fields { flex-direction: column; gap: 0; }
         }
     </style>
 </head>
 <body>
-<a href="/" class="btn btn-secondary">Обратно в меню</a>
+
+<!-- Кнопка Назад/На главную -->
+<c:choose>
+    <c:when test="${not empty sessionScope.loggedInUser and sessionScope.authenticatedUserType == 'citizen'}">
+        <a href="${pageContext.request.contextPath}/appeal/my-appeals" class="btn btn-secondary">К моим обращениям</a>
+    </c:when>
+    <c:when test="${not empty sessionScope.adminUsername and sessionScope.authenticatedUserType == 'admin'}">
+        <a href="${pageContext.request.contextPath}/admin/list" class="btn btn-secondary">К списку</a>
+    </c:when>
+    <c:otherwise>
+        <a href="${pageContext.request.contextPath}/" class="btn btn-secondary">На главную</a>
+    </c:otherwise>
+</c:choose>
+
 
 <h1>Создание обращения</h1>
+<c:if test="${not empty successMessage}">
+    <p style="color:green; background-color: #e6ffe6; padding: 10px; border: 1px solid green;">${successMessage}</p>
+</c:if>
+<c:if test="${not empty errorMessage}">
+    <p style="color:red; background-color: #ffe6e6; padding: 10px; border: 1px solid red;">${errorMessage}</p>
+</c:if>
 
-<form action="/appeal/save" method="post" class="appeal-form">
+<form action="${pageContext.request.contextPath}/appeal/save" method="post" class="appeal-form">
     <div class="applicant-fields">
         <div class="form-group">
             <label for="applicantName">ФИО заявителя:</label>
-            <input type="text" id="applicantName" name="applicantName" required>
+            <input type="text" id="applicantName" name="applicantName"
+                   value="${appeal.applicantName}" <%-- Pre-filled by controller if citizen --%>
+                   required
+                   <c:if test="${not empty sessionScope.loggedInUser and sessionScope.authenticatedUserType == 'citizen'}">readonly</c:if> >
         </div>
         <div class="form-group">
-            <label for="managerName">ФИО руководителя:</label>
-            <input type="text" id="managerName" name="managerName" required>
+            <label for="managerName">ФИО руководителя:</label> <%-- Usually for internal routing --%>
+            <input type="text" id="managerName" name="managerName" value="${appeal.managerName}" required>
         </div>
     </div>
 
     <div class="address-topic-fields">
         <div class="form-group">
-            <label for="address">Адрес:</label>
-            <input type="text" id="address" name="address" required>
+            <label for="address">Адрес фактического проживания:</label>
+            <input type="text" id="address" name="address" value="${appeal.address}" required>
         </div>
         <div class="form-group">
-            <label for="topic">Тема:</label>
-            <input type="text" id="topic" name="topic" required>
+            <label for="topic">Тема обращения:</label>
+            <input type="text" id="topic" name="topic" value="${appeal.topic}" required>
         </div>
     </div>
 
     <div class="form-group content-field">
         <label for="content">Содержание обращения:</label>
-        <textarea id="content" name="content" rows="6" required></textarea>
+        <textarea id="content" name="content" rows="6" required>${appeal.content}</textarea>
     </div>
 
+    <%-- Этот параметр нужен, если форма используется из админской части /admin/create --%>
+    <%-- list=true означает, что после сохранения нужно вернуться на /admin/list --%>
+    <%-- Для /appeal/create этот параметр обычно false или отсутствует --%>
     <input type="hidden" name="list" value="${list}">
 
+
     <div class="submit-container">
-        <button type="submit" class="btn btn-primary">Сохранить</button>
+        <button type="submit" class="btn btn-primary">Сохранить обращение</button>
     </div>
 </form>
 </body>

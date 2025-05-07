@@ -285,7 +285,7 @@
   <a href="/admin/list" class="back-button no-print btn-secondary">Вернуться к списку</a>
 </c:if>
 <c:if test="${empty qrCode}">
-  <a href="/appeal/check" class="btn-secondary">Вернуться к списку</a>
+  <a href="/appeal/my-appeals" class="btn-secondary">Вернуться к списку</a>
 </c:if>
 
 <div class="container">

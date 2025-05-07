@@ -41,10 +41,30 @@ public class AdminController {
     /**
      * Отображает список всех заявлений
      */
+    private boolean isAdminSessionValid(HttpSession session) {
+        String adminUsername = (String) session.getAttribute("adminUsername");
+        String userType = (String) session.getAttribute("authenticatedUserType");
+        Integer officeIdFromSession = (Integer) session.getAttribute("officeId");
+        return adminUsername != null && "admin".equals(userType) && officeIdFromSession != null;
+    }
+
     @GetMapping("/list")
-    public String list(Model model, HttpSession session) {
-        model.addAttribute("appeals", appService.getAppeals());
-        model.addAttribute("officeId", session.getAttribute("officeId"));
+    public String listAppeals(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
+
+        if (!isAdminSessionValid(session)) {
+            redirectAttributes.addFlashAttribute("error", "Ваша сессия истекла или у вас нет прав. Пожалуйста, войдите снова.");
+            return "redirect:/admin/login";
+        }
+
+        try {
+            model.addAttribute("appeals", appService.getAppeals());
+            model.addAttribute("officeId", session.getAttribute("officeId"));
+        } catch (Exception e) {
+            System.err.println("[AdminController] /list: Ошибка при получении данных: " + e.getMessage());
+            e.printStackTrace();
+            model.addAttribute("errorMessage_critical", "Произошла ошибка при загрузке списка заявлений.");
+            return "error_page_admin";
+        }
         return "list";
     }
 

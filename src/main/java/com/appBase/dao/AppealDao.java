@@ -14,33 +14,28 @@ import java.util.List;
 public class AppealDao {
 
     @Autowired
-    private SessionFactory sessionFactory; // Для управления сессиями Hibernate
+    private SessionFactory sessionFactory;
 
-    // Получение текущей сессии базы данных
     private Session getCurrentSession() {
         return sessionFactory.getCurrentSession();
     }
 
-    // Получение всех заявлений из базы данных
     public List<Appeal> getAllAppeals(){
-        return getCurrentSession().createQuery("from Appeal").list();
+        return getCurrentSession().createQuery("from Appeal", Appeal.class).list();
     }
 
-    // Получение только заявлений со статусом CREATED
     public List<Appeal> getNewAppeals(){
         Query<Appeal> query = getCurrentSession().createQuery("from Appeal where status = :status", Appeal.class);
         query.setParameter("status", AppealStatus.CREATED);
         return query.list();
     }
 
-    // Получение заявлений со статусом CREATED, которые не были распечатаны
     public List<Appeal> getCreatedAndNotPrintedAppeals(){
         Query<Appeal> query = getCurrentSession().createQuery("from Appeal where status = :status and printer = false", Appeal.class);
         query.setParameter("status", AppealStatus.CREATED);
         return query.list();
     }
 
-    // Получение рассмотренных и отклоненных заявлений
     public List<Appeal> getReviewedAppeals(){
         Query<Appeal> query = getCurrentSession().createQuery("from Appeal where status = :status1 or status = :status2", Appeal.class);
         query.setParameter("status1", AppealStatus.REVIEWED);
@@ -48,25 +43,21 @@ public class AppealDao {
         return query.list();
     }
 
-    // Поиск заявления по его ID
     public Appeal getAppealById(Long id){
         return getCurrentSession().get(Appeal.class, id);
     }
 
-    // Сохранение нового заявления в базу данных
     public void saveAppeal(Appeal appeal) {
-        getCurrentSession().save(appeal);
+        getCurrentSession().saveOrUpdate(appeal); // Use saveOrUpdate for flexibility
     }
 
-    // Поиск заявления по его UUID
     public Appeal getAppealByUuid(String uuid){
-        Query query = getCurrentSession().createQuery("from Appeal where uuid = :uuid");
+        Query<Appeal> query = getCurrentSession().createQuery("from Appeal where uuid = :uuid", Appeal.class);
         query.setParameter("uuid", uuid);
         List<Appeal> appeals = query.list();
         return appeals.isEmpty() ? null : appeals.get(0);
     }
 
-    // Удаление заявления по его ID
     public void deleteAppeal(Long id) {
         Appeal appeal = getCurrentSession().get(Appeal.class, id);
         if (appeal != null) {
@@ -74,14 +65,20 @@ public class AppealDao {
         }
     }
 
-    // Поиск заявлений по имени заявителя
     public List<Appeal> getAppealByName(String name) {
-        Query<Appeal> query = getCurrentSession().createQuery("from Appeal where applicant_name = :name", Appeal.class);
+        Query<Appeal> query = getCurrentSession().createQuery("from Appeal where applicantName = :name", Appeal.class);
         query.setParameter("name", name);
         return query.list();
     }
 
-    // Получение рассмотренных или отклоненных заявлений, которые не были распечатаны
+    public List<Appeal> getAppealsByAppUserId(Long appUserId) {
+        Query<Appeal> query = getCurrentSession().createQuery(
+                "FROM Appeal a WHERE a.appUser.id = :appUserId ORDER BY a.id DESC", Appeal.class);
+        query.setParameter("appUserId", appUserId);
+        return query.list();
+    }
+
+
     public List<Appeal> getReviewedAndNotPrintedAppeals(){
         Query<Appeal> query = getCurrentSession().createQuery("from Appeal where (status = :status1 or status = :status2) and printer = false", Appeal.class);
         query.setParameter("status1", AppealStatus.REVIEWED);
@@ -89,57 +86,65 @@ public class AppealDao {
         return query.list();
     }
 
-    // Отметка нескольких заявлений как распечатанных по их ID
     public void markAsPrinted(List<Long> ids){
-        if(!ids.isEmpty()){
+        if(ids != null && !ids.isEmpty()){
             for (Long id : ids){
                 Appeal appeal = getAppealById(id);
-                appeal.setPrinter(true);
-                getCurrentSession().saveOrUpdate(appeal);
+                if (appeal != null) {
+                    appeal.setPrinter(true);
+                    getCurrentSession().saveOrUpdate(appeal);
+                }
             }
         }
     }
 
-    // Обновление существующего заявления или сохранение нового
-    public void updateAppeal(Appeal appeal) {
-        Appeal temp = getAppealByUuid(appeal.getUuid());
-        if (appeal != null) {
-            temp.setApplicantName(appeal.getApplicantName());
-            temp.setManagerName(appeal.getManagerName());
-            temp.setAddress(appeal.getAddress());
-            temp.setTopic(appeal.getTopic());
-            temp.setContent(appeal.getContent());
-            temp.setResolution(appeal.getResolution());
-            temp.setStatus(appeal.getStatus());
-            temp.setNotes(appeal.getNotes());
-            temp.setPrinter(appeal.getPrinter());
-            getCurrentSession().update(temp);
-        }else{
-            getCurrentSession().save(appeal);
+    public void updateAppeal(Appeal appealFromForm) {
+        Appeal existingAppeal = getAppealById(appealFromForm.getId());
+        if (existingAppeal != null) {
+            existingAppeal.setApplicantName(appealFromForm.getApplicantName());
+            existingAppeal.setManagerName(appealFromForm.getManagerName());
+            existingAppeal.setAddress(appealFromForm.getAddress());
+            existingAppeal.setTopic(appealFromForm.getTopic());
+            existingAppeal.setContent(appealFromForm.getContent());
+            existingAppeal.setResolution(appealFromForm.getResolution());
+            existingAppeal.setStatus(appealFromForm.getStatus());
+            existingAppeal.setNotes(appealFromForm.getNotes());
+            existingAppeal.setPrinter(appealFromForm.getPrinter());
+            getCurrentSession().update(existingAppeal);
+        } else {
+            System.err.println("Attempted to update a non-existent appeal with ID: " + appealFromForm.getId());
         }
     }
 
-    // Обновление заявления из данных QR-кода
     public void updateFromQr(String str) {
-        Appeal forSave = Appeal.fromString(str);
-        forSave.setPrinter(false);
+        Appeal appealFromQr = Appeal.fromString(str);
 
-        Appeal existingAppeal = getAppealByUuid(forSave.getUuid());
+        Appeal existingAppeal = null;
+        if (appealFromQr.getUuid() != null) {
+            existingAppeal = getAppealByUuid(appealFromQr.getUuid());
+        } else if (appealFromQr.getId() != null) {
+            existingAppeal = getAppealById(appealFromQr.getId());
+        }
+
 
         if (existingAppeal != null) {
-            existingAppeal.setApplicantName(forSave.getApplicantName());
-            existingAppeal.setManagerName(forSave.getManagerName());
-            existingAppeal.setAddress(forSave.getAddress());
-            existingAppeal.setTopic(forSave.getTopic());
-            existingAppeal.setContent(forSave.getContent());
-            existingAppeal.setResolution(forSave.getResolution());
-            existingAppeal.setStatus(forSave.getStatus());
-            existingAppeal.setNotes(forSave.getNotes());
+            existingAppeal.setApplicantName(appealFromQr.getApplicantName());
+            existingAppeal.setManagerName(appealFromQr.getManagerName());
+            existingAppeal.setAddress(appealFromQr.getAddress());
+            existingAppeal.setTopic(appealFromQr.getTopic());
+            existingAppeal.setContent(appealFromQr.getContent());
+            existingAppeal.setResolution(appealFromQr.getResolution());
+            existingAppeal.setStatus(appealFromQr.getStatus());
+            existingAppeal.setNotes(appealFromQr.getNotes());
             existingAppeal.setPrinter(false);
-
             getCurrentSession().update(existingAppeal);
         } else {
-            getCurrentSession().save(forSave);
+            appealFromQr.setPrinter(false);
+            if(appealFromQr.getUuid() == null || appealFromQr.getUuid().trim().isEmpty() || "null".equalsIgnoreCase(appealFromQr.getUuid())) {
+                appealFromQr.setUuid(java.util.UUID.randomUUID().toString());
+            }
+            appealFromQr.setId(null);
+            getCurrentSession().save(appealFromQr);
         }
     }
 }

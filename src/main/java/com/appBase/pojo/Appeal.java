@@ -37,7 +37,7 @@ public class Appeal {
     private String resolution;
 
     @Column(name = "status", nullable = false)
-    private String status = "Создано";
+    private String status = "Создано"; // Consider using an Enum or constants from AppealStatus
 
     @Column(name = "notes", length = 2000)
     private String notes;
@@ -45,7 +45,20 @@ public class Appeal {
     @Column(name = "printer")
     private Boolean printer;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "app_user_id") // This is the foreign key column in appealsBase table
+    private AppUser appUser;
+
+
     // Getters and Setters
+
+    public AppUser getAppUser() {
+        return appUser;
+    }
+
+    public void setAppUser(AppUser appUser) {
+        this.appUser = appUser;
+    }
 
     public Long getId() {
         return id;
@@ -147,7 +160,8 @@ public class Appeal {
                 " resolution:" + resolution +
                 " status:" + status +
                 " notes:" + notes +
-                " printer:" + printer;
+                " printer:" + printer +
+                (appUser != null ? " appUserId:" + appUser.getId() : ""); // Optional: include appUser ID
     }
 
     public static Appeal fromString(String data) {
@@ -160,19 +174,20 @@ public class Appeal {
         while (matcher.find()) {
             String key = matcher.group(1);
             String value = matcher.group(2).trim();
-            System.out.println("Найдено поле: " + key + " = " + value);
+            // System.out.println("Найдено поле: " + key + " = " + value); // For debugging
             keyValuePairs.put(key, value);
         }
 
-        System.out.println("Все найденные ключ-значения: " + keyValuePairs);
+        // System.out.println("Все найденные ключ-значения: " + keyValuePairs); // For debugging
 
-        if (keyValuePairs.containsKey("id")) {
+        if (keyValuePairs.containsKey("id") && !keyValuePairs.get("id").equals("null")) { // Check for "null" string
             try {
                 appeal.setId(Long.parseLong(keyValuePairs.get("id")));
             } catch (NumberFormatException e) {
-                System.err.println("Ошибка парсинга ID: " + e.getMessage());
+                System.err.println("Ошибка парсинга ID: " + keyValuePairs.get("id") + " | " + e.getMessage());
             }
         }
+
 
         appeal.setUuid(keyValuePairs.getOrDefault("uuid", UUID.randomUUID().toString()));
         appeal.setApplicantName(keyValuePairs.getOrDefault("applicantName", ""));
@@ -183,12 +198,12 @@ public class Appeal {
         String content = keyValuePairs.getOrDefault("content", "");
         appeal.setContent(content);
 
-        appeal.setResolution(keyValuePairs.getOrDefault("resolution", null));
+        appeal.setResolution(keyValuePairs.get("resolution")); // Allow null
         appeal.setStatus(keyValuePairs.getOrDefault("status", "Создано"));
-        appeal.setNotes(keyValuePairs.getOrDefault("notes", null));
+        appeal.setNotes(keyValuePairs.get("notes")); // Allow null
 
-        String printer = keyValuePairs.getOrDefault("printer", "false");
-        appeal.setPrinter(Boolean.parseBoolean(printer));
+        String printerStr = keyValuePairs.getOrDefault("printer", "false");
+        appeal.setPrinter(Boolean.parseBoolean(printerStr));
 
         return appeal;
     }

@@ -1,6 +1,5 @@
 package com.appBase.service;
 
-
 import com.appBase.dao.AppealDao;
 import com.appBase.pojo.Appeal;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,13 +48,11 @@ public class AppService {
     }
 
     public void deleteAppeal(Appeal appeal) {
-        appealDao.deleteAppeal(appeal.getId());
+        if (appeal != null && appeal.getId() != null) {
+            appealDao.deleteAppeal(appeal.getId());
+        }
     }
 
-    public void updateAppealFromQrData(String qrData) {
-        Appeal appeal = Appeal.fromString(qrData);
-        appealDao.updateAppeal(appeal);
-    }
     public List<Appeal> getReviewedAndNotPrintedAppeals() {
         return appealDao.getReviewedAndNotPrintedAppeals();
     }
@@ -70,5 +67,9 @@ public class AppService {
 
     public void updateFromQr(String qrData) {
         appealDao.updateFromQr(qrData);
+    }
+
+    public List<Appeal> getAppealsByAppUserId(Long appUserId) {
+        return appealDao.getAppealsByAppUserId(appUserId);
     }
 }

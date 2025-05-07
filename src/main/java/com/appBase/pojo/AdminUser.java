@@ -13,7 +13,7 @@ public class AdminUser {
     @Column(name = "username", unique = true, nullable = false, length = 50)
     private String username;
 
-    @Column(name = "password", nullable = false, length = 100) // Increased length for hash
+    @Column(name = "password", nullable = false, length = 100)
     private String password;
 
     @Column(name = "office_id", nullable = false)

@@ -30,18 +30,12 @@
         font-weight: 500;
     }
 
-    /* ======================================== */
-    /* Layout Containers               */
-    /* ======================================== */
     .container {
         max-width: 1200px;
         margin: 0 auto;
         padding: 20px;
     }
 
-    /* ======================================== */
-    /* Button Styles                   */
-    /* ======================================== */
     .btn,
     .download-link,
     .print-button {
@@ -96,9 +90,6 @@
         background-color: #5a6268;
     }
 
-    /* ======================================== */
-    /* Controls Container              */
-    /* ======================================== */
     .controls-container {
         display: flex;
         justify-content: center;
@@ -107,9 +98,6 @@
         flex-wrap: wrap;
     }
 
-    /* ======================================== */
-    /* Appeal Card Styles             */
-    /* ======================================== */
     .appeal-card {
         margin-bottom: 30px;
         padding: 20px;
@@ -171,9 +159,6 @@
         box-shadow: var(--box-shadow);
     }
 
-    /* ======================================== */
-    /* Print Styles                    */
-    /* ======================================== */
     @media print {
         @page {
             size: auto;

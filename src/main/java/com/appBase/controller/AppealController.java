@@ -156,6 +156,7 @@ public class AppealController {
             model.addAttribute("appeals", myAppeals);
             model.addAttribute("pageTitle", "My Submitted Appeals");
             model.addAttribute("isCitizenView", true);
+            model.addAttribute("officeId", 0);
             return "list";
         } else {
             redirectAttributes.addFlashAttribute("errorMessage", "You need to login to view your appeals.");

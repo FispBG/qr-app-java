@@ -9,21 +9,14 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <style>
-  /* ======================================== */
-  /* Relevant Global Styles & Variables */
-  /* ======================================== */
   :root {
     --primary-blue: #1a73e8;
     --light-blue: #e8f0fe;
-    /* --accent-color: #ff6b6b; /* Not used on this page */
     --text-color: #333;
-    --light-gray: #f5f5f5;   /* Used in filters/tables */
-    --input-gray: #f0f0f0;   /* Used in filters/tables */
+    --light-gray: #f5f5f5;
+    --input-gray: #f0f0f0;
     --border-radius: 8px;
     --box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    /* --box-shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.2); /* Implicitly used via hover */
-    /* --box-shadow-modal: 0 5px 15px rgba(0, 0, 0, 0.3); /* Not used */
-    /* --box-shadow-large: 0 4px 20px rgba(0, 0, 0, 0.1); /* Not used */
   }
 
   body {
@@ -40,11 +33,11 @@
   h1 {
     color: var(--primary-blue);
     text-align: center;
-    margin: 30px 0; /* Default margin */
+    margin: 30px 0;
     font-weight: 500;
   }
 
-  a { /* Base link style, needed for table links */
+  a {
     color: var(--primary-blue);
     text-decoration: none;
     cursor: pointer;
@@ -54,26 +47,18 @@
   }
 
 
-  /* ======================================== */
-  /* Relevant Layout Containers         */
-  /* ======================================== */
   .container {
-    max-width: 1200px; /* Default max-width */
-    margin: 0 auto;    /* Centering */
-    padding: 20px;     /* Default padding */
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
   }
 
-  /* ======================================== */
-  /* Relevant Button Styles             */
-  /* ======================================== */
-
-  /* Logout Button (Fixed Position) */
   .logout-btn {
     position: fixed;
     top: 20px;
     right: 20px;
     padding: 8px 16px;
-    background-color: #6c757d; /* Secondary color */
+    background-color: #6c757d;
     color: white;
     font-size: 14px;
     z-index: 1000;
@@ -87,17 +72,14 @@
   .logout-btn:hover {
     background-color: #5a6268;
     transform: translateY(-1px);
-    text-decoration: none; /* Overrides base 'a:hover' */
+    text-decoration: none;
   }
 
-  /* ======================================== */
-  /* Hamburger Menu / Sidebar        */
-  /* ======================================== */
-  .hamburger-menu { /* Container for the icon */
+  .hamburger-menu {
     position: fixed;
     top: 20px;
     left: 20px;
-    z-index: 1000; /* Above overlay */
+    z-index: 1000;
     cursor: pointer;
   }
 
@@ -109,7 +91,7 @@
     height: 24px;
   }
 
-  .hamburger-icon span { /* The bars */
+  .hamburger-icon span {
     width: 100%;
     height: 3px;
     background-color: var(--primary-blue);
@@ -117,20 +99,20 @@
     transition: all 0.3s ease-in-out;
   }
 
-  .menu-items { /* The sliding menu */
+  .menu-items {
     position: fixed;
     top: 0;
-    left: -250px; /* Start off-screen */
+    left: -250px;
     width: 250px;
     height: 100%;
     background-color: white;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
     transition: left 0.3s ease-in-out;
-    z-index: 999; /* Below icon, above overlay */
-    padding-top: 60px; /* Space for icon/header */
+    z-index: 999;
+    padding-top: 60px;
   }
 
-  .menu-items a { /* Links within the menu */
+  .menu-items a {
     display: block;
     padding: 15px 20px;
     color: var(--text-color);
@@ -141,58 +123,52 @@
   .menu-items a:hover {
     background-color: var(--light-blue);
     color: var(--primary-blue);
-    text-decoration: none; /* Overrides base 'a:hover' */
+    text-decoration: none;
   }
 
-  .overlay { /* Background dim */
+  .overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
-    display: none; /* Hidden by default */
-    z-index: 998; /* Below menu */
-    cursor: pointer; /* Indicate it can be clicked to close */
+    display: none;
+    z-index: 998;
+    cursor: pointer;
   }
 
-  /* Styles when menu is open (add .menu-open to body or container) */
   .menu-open .menu-items {
-    left: 0; /* Slide in */
+    left: 0;
   }
 
   .menu-open .overlay {
-    display: block; /* Show overlay */
+    display: block;
   }
 
-  .menu-open .hamburger-icon span:nth-child(1) { /* Top bar -> / */
+  .menu-open .hamburger-icon span:nth-child(1) {
     transform: translateY(10px) rotate(45deg);
   }
 
-  .menu-open .hamburger-icon span:nth-child(2) { /* Middle bar -> fade out */
+  .menu-open .hamburger-icon span:nth-child(2) {
     opacity: 0;
   }
 
-  .menu-open .hamburger-icon span:nth-child(3) { /* Bottom bar -> \ */
+  .menu-open .hamburger-icon span:nth-child(3) {
     transform: translateY(-10px) rotate(-45deg);
   }
 
-  /* Shift body content when menu is open */
   .menu-open body {
     margin-left: 250px;
   }
 
-
-  /* ======================================== */
-  /* Table & Filter Styles           */
-  /* ======================================== */
   table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
-    box-shadow: var(--box-shadow); /* Add shadow to tables */
-    border-radius: var(--border-radius); /* Rounded corners for the table */
-    overflow: hidden; /* Ensures border-radius clips children */
+    box-shadow: var(--box-shadow);
+    border-radius: var(--border-radius);
+    overflow: hidden;
   }
 
   th {
@@ -201,81 +177,72 @@
     padding: 12px 8px;
     text-align: left;
     font-weight: 500;
-    cursor: pointer; /* Indicate sortable columns */
-    user-select: none; /* Prevent text selection on click */
+    cursor: pointer;
+    user-select: none;
   }
 
   td {
     padding: 10px 8px;
-    border-bottom: 1px solid #e0e0e0; /* Lighter border */
-    background-color: white; /* Default background */
+    border-bottom: 1px solid #e0e0e0;
+    background-color: white;
   }
 
-  /* Remove bottom border for the last row */
   tbody tr:last-child td {
     border-bottom: none;
   }
 
-  /* Alternating row colors */
   tbody tr:nth-child(odd) td {
-    background-color: var(--light-blue); /* Use light blue for odd rows */
+    background-color: var(--light-blue);
   }
   tbody tr:nth-child(even) td {
-    background-color: white; /* Keep even rows white */
+    background-color: white;
   }
 
-  /* Hover effect for table rows */
   tbody tr:hover td {
-    background-color: #d6e4f9; /* Slightly darker blue on hover */
+    background-color: #d6e4f9;
   }
 
 
-  /* Specific Table Cell Content Styling */
-  #appealsTable a { /* Links within the appeals table */
+  #appealsTable a {
     color: var(--primary-blue);
-    /* Inherits base 'a' styles */
-    font-weight: 500; /* Make link slightly bolder */
+    font-weight: 500;
   }
 
   #appealsTable a:hover {
-    /* Inherits base 'a:hover' underline */
   }
 
-  /* Sorting Icons */
-  th .sort-icon { /* Container for the icon */
+  th .sort-icon {
     display: inline-block;
-    width: 1em; /* Reserve space */
+    width: 1em;
     text-align: center;
-    color: white; /* Match header text color */
-    opacity: 0.6; /* Make default icon slightly less prominent */
+    color: white;
+    opacity: 0.6;
     transition: opacity 0.2s ease;
   }
 
   th:hover .sort-icon {
-    opacity: 1; /* Full opacity on header hover */
+    opacity: 1;
   }
 
-  th .sort-icon::after { /* Default icon (down arrow) */
+  th .sort-icon::after {
     content: "▼";
     font-size: 0.8em;
   }
 
-  th .sort-icon.asc::after { /* Ascending icon (up arrow) */
+  th .sort-icon.asc::after {
     content: "▲";
   }
 
-  /* Style for the currently sorted column header */
   th.sorted-asc .sort-icon,
   th.sorted-desc .sort-icon {
-    opacity: 1; /* Make sorted icon fully visible */
+    opacity: 1;
   }
 
 
-  /* Filter Container */
   .filter-container {
     margin: 30px 0 20px 0;
     padding: 15px;
-    background-color: white; /* Changed to white for contrast */
+    background-color: white;
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
   }
@@ -291,9 +258,9 @@
     border-radius: var(--border-radius);
     border: 1px solid #ddd;
     background-color: var(--input-gray);
-    min-width: 150px; /* Give dropdown some width */
+    min-width: 150px;
     cursor: pointer;
-    font-size: 14px; /* Match logout button font-size perhaps */
+    font-size: 14px;
   }
   .filter-container select:focus {
     outline: none;
@@ -302,25 +269,15 @@
   }
 
 
-  /* ======================================== */
-  /* Helper Classes Used             */
-  /* ======================================== */
   .text-center {
     text-align: center;
   }
 
-  .no-print { /* Class to hide elements when printing */
-    /* Rule applied within @media print */
   }
 
-  /* Class applied to TR elements for filtering */
   .appeal-row {
-    /* No specific style needed here unless for layout/spacing */
   }
 
-  /* ======================================== */
-  /* Relevant Print Styles           */
-  /* ======================================== */
   @media print {
     @page {
       size: A4;
@@ -336,20 +293,18 @@
       line-height: 1.4;
     }
 
-    /* Hide elements not needed for print */
     .no-print,
     .hamburger-menu,
     .logout-btn,
     .filter-container,
     .menu-items,
     .overlay,
-    th .sort-icon, /* Hide sort icons */
-    #appealsTable a[href] /* Hide "Посмотреть" links */
+    th .sort-icon,
+    #appealsTable a[href]
     {
       display: none !important;
     }
 
-    /* Ensure container takes full width */
     .container {
       max-width: 100% !important;
       width: 100% !important;
@@ -365,7 +320,6 @@
       color: black !important;
     }
 
-    /* Table print styles */
     table {
       box-shadow: none !important;
       border: 1px solid #999 !important;
@@ -392,7 +346,7 @@
       cursor: default;
     }
 
-    a { /* Ensure any remaining links are black */
+    a {
       color: black !important;
       text-decoration: none !important;
     }
@@ -404,7 +358,6 @@
   <link href="${pageContext.request.contextPath}/css/global.css" rel="stylesheet">
 </head>
 <body>
-<!-- Кнопка выхода -->
 <c:if test="${officeId != 0}">
   <a href="/admin/logout" class="logout-btn">Выйти из панели работника</a>
 </c:if>
@@ -412,7 +365,6 @@
   <a href="/" class="logout-btn">Обратно в меню</a>
 </c:if>
 
-<!-- Гамбургер меню -->
 <div class="hamburger-menu" onclick="toggleMenu()">
   <div class="hamburger-icon">
     <span></span>
@@ -422,6 +374,9 @@
 </div>
 
 <div class="menu-items">
+  <c:if test="${officeId == 0}">
+    <a href="/appeal/create">Создать новое обращение</a>
+  </c:if>
   <c:if test="${officeId == 1}">
     <a href="/admin/create">Создать новое обращение</a>
     <a href="/admin/viewCreated">Печать новых обращений</a>
@@ -480,10 +435,10 @@
 
 <script>
   const columnSortOrders = {
-    0: true, // ID column - initially ascending
-    1: true, // Applicant column
-    2: true, // Manager column
-    4: true  // Status column
+    0: true,
+    1: true,
+    2: true,
+    4: true
   };
 
   function sortTable(columnIndex, isNumeric) {

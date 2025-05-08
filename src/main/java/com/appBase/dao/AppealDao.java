@@ -1,13 +1,16 @@
 package com.appBase.dao;
 
+import com.appBase.pojo.AppUser;
 import com.appBase.pojo.Appeal;
 import com.appBase.util.AppealStatus;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 
+import javax.persistence.NoResultException;
 import java.util.List;
 
 @Repository
@@ -16,7 +19,7 @@ public class AppealDao {
     @Autowired
     private SessionFactory sessionFactory;
 
-    private Session getCurrentSession() {
+    public  Session getCurrentSession() {
         return sessionFactory.getCurrentSession();
     }
 
@@ -66,9 +69,10 @@ public class AppealDao {
     }
 
     public void deleteAppeal(Long id) {
-        Appeal appeal = getCurrentSession().get(Appeal.class, id);
+        Session session = getCurrentSession();
+        Appeal appeal = session.get(Appeal.class, id);
         if (appeal != null) {
-            getCurrentSession().delete(appeal);
+            session.delete(appeal);
         }
     }
 
@@ -158,6 +162,34 @@ public class AppealDao {
             }
             appealFromQr.setId(null);
             getCurrentSession().save(appealFromQr);
+        }
+    }
+
+    public void deleteAppealById(Long appealId) {
+        if (appealId == null) {
+            return;
+        }
+
+        Session session = getCurrentSession();
+
+        Appeal appealToDelete = null;
+        try {
+            Query<Appeal> query = session.createQuery(
+                    "SELECT a FROM Appeal a LEFT JOIN FETCH a.appUser WHERE a.id = :id", Appeal.class);
+            query.setParameter("id", appealId);
+            appealToDelete = query.getSingleResult();
+        } catch (NoResultException e) {
+            return;
+        }
+
+        if (appealToDelete != null) {
+            AppUser associatedUser = appealToDelete.getAppUser();
+
+            if (associatedUser != null) {
+                Hibernate.initialize(associatedUser.getAppeals());
+                associatedUser.getAppeals().remove(appealToDelete);
+            }
+            session.delete(appealToDelete);
         }
     }
 }

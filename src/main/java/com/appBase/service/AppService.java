@@ -3,16 +3,19 @@ package com.appBase.service;
 import com.appBase.dao.AppealDao;
 import com.appBase.pojo.Appeal;
 import com.appBase.pojo.AppUser; // Добавлено
+import org.hibernate.Hibernate;
+import org.hibernate.Session;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.NoResultException;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-@Transactional
 @Service
 public class AppService {
 
@@ -22,38 +25,46 @@ public class AppService {
     @Autowired
     private AppUserService appUserService;
 
+    @Transactional(readOnly = true)
     public List<Appeal> getAppeals() {
         return appealDao.getAllAppeals();
     }
 
+    @Transactional(readOnly = true)
     public List<Appeal> getNewAppeal() {
         return appealDao.getNewAppeals();
     }
 
+    @Transactional(readOnly = true)
     public List<Appeal> getReviewedAppeals(){
         return appealDao.getReviewedAppeals();
     }
 
+    @Transactional(readOnly = true)
     public Appeal getAppealById(Long id) {
         return appealDao.getAppealById(id);
     }
 
+    @Transactional(readOnly = true)
     public Appeal getAppealByUuid(String uuid) {
         return appealDao.getAppealByUuid(uuid);
     }
 
+    @Transactional(readOnly = true)
     public List<Appeal> getCreatedAndNotPrintedAppeals(){
         return appealDao.getCreatedAndNotPrintedAppeals();
     }
-
+    @Transactional
     public void saveAppeal(Appeal appeal) {
         appealDao.saveAppeal(appeal);
     }
 
+    @Transactional
     public void updateAppeal(Appeal appeal) {
         appealDao.updateAppeal(appeal);
     }
 
+    @Transactional
     public void deleteAppeal(Appeal appeal) {
         if (appeal != null && appeal.getId() != null) {
             AppUser user = appeal.getAppUser();
@@ -64,18 +75,27 @@ public class AppService {
         }
     }
 
+    @Transactional
+    public void deleteAppealById(Long appealId) {
+        appealDao.deleteAppealById(appealId);
+    }
+
+    @Transactional(readOnly = true)
     public List<Appeal> getReviewedAndNotPrintedAppeals() {
         return appealDao.getReviewedAndNotPrintedAppeals();
     }
 
+    @Transactional
     public void markAsPrinted(List<Long> ids) {
         appealDao.markAsPrinted(ids);
     }
 
+    @Transactional(readOnly = true)
     public List<Appeal> getAppealByName(String name) {
         return appealDao.getAppealByName(name);
     }
 
+    @Transactional
     public void updateFromQr(String qrData) {
         Appeal appealFromQrObject = Appeal.fromString(qrData);
 
@@ -105,7 +125,7 @@ public class AppService {
         appealDao.updateFromQr(appealFromQrObject.toString());
     }
 
-
+    @Transactional(readOnly = true)
     public List<Appeal> getAppealsByAppUserId(Long appUserId) {
         return appealDao.getAppealsByAppUserId(appUserId);
     }

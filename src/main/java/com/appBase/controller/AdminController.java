@@ -155,8 +155,10 @@ public class AdminController {
      * Удаляет заявление
      */
     @PostMapping("/delete")
-    public String delete(@ModelAttribute("appeal") Appeal appeal) {
-        appService.deleteAppeal(appService.getAppealById(appeal.getId()));
+    public String delete(@RequestParam("id") Long appealId) {
+        if (appealId != null) {
+            appService.deleteAppealById(appealId);
+        }
         return "redirect:/admin/list";
     }
 

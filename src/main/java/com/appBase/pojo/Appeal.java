@@ -45,7 +45,7 @@ public class Appeal {
     @Column(name = "printer")
     private Boolean printer;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "app_user_id")
     private AppUser appUser;
 

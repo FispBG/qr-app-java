@@ -44,7 +44,14 @@ public class AppealDao {
     }
 
     public Appeal getAppealById(Long id){
-        return getCurrentSession().get(Appeal.class, id);
+        try{
+            Query<Appeal> query = getCurrentSession().createQuery(
+                    "SELECT a FROM Appeal a LEFT JOIN FETCH a.appUser WHERE a.id = :id", Appeal.class);
+            query.setParameter("id", id);
+            return query.uniqueResult();
+        }catch (Exception e){
+            return null;
+        }
     }
 
     public void saveAppeal(Appeal appeal) {

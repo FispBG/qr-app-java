@@ -48,7 +48,7 @@ public class AppealDao {
     }
 
     public void saveAppeal(Appeal appeal) {
-        getCurrentSession().saveOrUpdate(appeal); // Use saveOrUpdate for flexibility
+        getCurrentSession().saveOrUpdate(appeal);
     }
 
     public Appeal getAppealByUuid(String uuid){
@@ -137,6 +137,12 @@ public class AppealDao {
             existingAppeal.setStatus(appealFromQr.getStatus());
             existingAppeal.setNotes(appealFromQr.getNotes());
             existingAppeal.setPrinter(false);
+            if (appealFromQr.getAppUser() != null) {
+                existingAppeal.setAppUser(appealFromQr.getAppUser());
+            }
+            if (appealFromQr.getUuid() != null && !appealFromQr.getUuid().equals(existingAppeal.getUuid())) {
+                existingAppeal.setUuid(appealFromQr.getUuid());
+            }
             getCurrentSession().update(existingAppeal);
         } else {
             appealFromQr.setPrinter(false);

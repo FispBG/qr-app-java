@@ -37,7 +37,7 @@ public class Appeal {
     private String resolution;
 
     @Column(name = "status", nullable = false)
-    private String status = "Создано"; // Consider using an Enum or constants from AppealStatus
+    private String status = "Создано";
 
     @Column(name = "notes", length = 2000)
     private String notes;
@@ -46,7 +46,7 @@ public class Appeal {
     private Boolean printer;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "app_user_id") // This is the foreign key column in appealsBase table
+    @JoinColumn(name = "app_user_id")
     private AppUser appUser;
 
 
@@ -150,6 +150,7 @@ public class Appeal {
 
     @Override
     public String toString() {
+        String appUserIdStr = (appUser != null && appUser.getId() != null) ? String.valueOf(appUser.getId()) : "null";
         return "id:" + id +
                 " uuid:" + uuid +
                 " applicantName:" + applicantName +
@@ -161,7 +162,7 @@ public class Appeal {
                 " status:" + status +
                 " notes:" + notes +
                 " printer:" + printer +
-                (appUser != null ? " appUserId:" + appUser.getId() : ""); // Optional: include appUser ID
+                " appUserId:" + appUserIdStr;
     }
 
     public static Appeal fromString(String data) {
@@ -174,13 +175,10 @@ public class Appeal {
         while (matcher.find()) {
             String key = matcher.group(1);
             String value = matcher.group(2).trim();
-            // System.out.println("Найдено поле: " + key + " = " + value); // For debugging
             keyValuePairs.put(key, value);
         }
 
-        // System.out.println("Все найденные ключ-значения: " + keyValuePairs); // For debugging
-
-        if (keyValuePairs.containsKey("id") && !keyValuePairs.get("id").equals("null")) { // Check for "null" string
+        if (keyValuePairs.containsKey("id") && !"null".equalsIgnoreCase(keyValuePairs.get("id"))) {
             try {
                 appeal.setId(Long.parseLong(keyValuePairs.get("id")));
             } catch (NumberFormatException e) {
@@ -188,22 +186,16 @@ public class Appeal {
             }
         }
 
-
         appeal.setUuid(keyValuePairs.getOrDefault("uuid", UUID.randomUUID().toString()));
         appeal.setApplicantName(keyValuePairs.getOrDefault("applicantName", ""));
         appeal.setManagerName(keyValuePairs.getOrDefault("managerName", ""));
         appeal.setAddress(keyValuePairs.getOrDefault("address", ""));
         appeal.setTopic(keyValuePairs.getOrDefault("topic", ""));
-
-        String content = keyValuePairs.getOrDefault("content", "");
-        appeal.setContent(content);
-
+        appeal.setContent(keyValuePairs.getOrDefault("content", ""));
         appeal.setResolution(keyValuePairs.get("resolution")); // Allow null
         appeal.setStatus(keyValuePairs.getOrDefault("status", "Создано"));
         appeal.setNotes(keyValuePairs.get("notes")); // Allow null
-
-        String printerStr = keyValuePairs.getOrDefault("printer", "false");
-        appeal.setPrinter(Boolean.parseBoolean(printerStr));
+        appeal.setPrinter(Boolean.parseBoolean(keyValuePairs.getOrDefault("printer", "false")));
 
         return appeal;
     }

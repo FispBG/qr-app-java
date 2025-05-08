@@ -362,7 +362,7 @@
   <a href="/admin/logout" class="logout-btn">Выйти из панели работника</a>
 </c:if>
 <c:if test="${officeId == 0}">
-  <a href="/" class="logout-btn">Обратно в меню</a>
+  <a href="/user/logout" class="logout-btn">Выход</a>
 </c:if>
 
 <div class="hamburger-menu" onclick="toggleMenu()">

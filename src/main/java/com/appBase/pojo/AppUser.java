@@ -2,6 +2,7 @@ package com.appBase.pojo;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.ArrayList; // Added for initialization
 
 @Entity
 @Table(name = "app_users")
@@ -20,8 +21,8 @@ public class AppUser {
     @Column(name = "full_name", nullable = false, length = 150)
     private String fullName;
 
-    @OneToMany(mappedBy = "appUser", fetch = FetchType.LAZY)
-    private List<Appeal> appeals;
+    @OneToMany(mappedBy = "appUser", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<Appeal> appeals = new ArrayList<>();
 
     // Getters and Setters
     public Long getId() {
@@ -62,5 +63,15 @@ public class AppUser {
 
     public void setAppeals(List<Appeal> appeals) {
         this.appeals = appeals;
+    }
+
+    public void addAppeal(Appeal appeal) {
+        appeals.add(appeal);
+        appeal.setAppUser(this);
+    }
+
+    public void removeAppeal(Appeal appeal) {
+        appeals.remove(appeal);
+        appeal.setAppUser(null);
     }
 }

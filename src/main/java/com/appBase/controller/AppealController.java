@@ -68,7 +68,7 @@ public class AppealController {
         if (loggedInCitizen != null && "citizen".equals(userType)) {
             AppUser persistentUser = appUserService.findUserById(loggedInCitizen.getId());
             if (persistentUser != null) {
-                appeal.setAppUser(persistentUser);
+                persistentUser.addAppeal(appeal); // Эквивалентно appeal.setAppUser(persistentUser);
                 if(appeal.getApplicantName() == null || appeal.getApplicantName().trim().isEmpty()){
                     appeal.setApplicantName(persistentUser.getFullName());
                 }
@@ -77,7 +77,9 @@ public class AppealController {
                 return "redirect:/appeal/create";
             }
         } else if (session.getAttribute("adminUsername") != null && "admin".equals(userType)){
+            appeal.setAppUser(null);
         } else {
+            appeal.setAppUser(null);
         }
 
 

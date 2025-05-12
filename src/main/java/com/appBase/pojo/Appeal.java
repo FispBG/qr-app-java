@@ -7,6 +7,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
 @Entity
 @Table(name = "appealsBase")
 public class Appeal {
@@ -162,7 +163,8 @@ public class Appeal {
                 " status:" + status +
                 " notes:" + notes +
                 " printer:" + printer +
-                " appUserId:" + appUserIdStr;
+                " appUserId:" + appUserIdStr +
+                " appUser:" + appUser;
     }
 
     public static Appeal fromString(String data) {
@@ -192,10 +194,21 @@ public class Appeal {
         appeal.setAddress(keyValuePairs.getOrDefault("address", ""));
         appeal.setTopic(keyValuePairs.getOrDefault("topic", ""));
         appeal.setContent(keyValuePairs.getOrDefault("content", ""));
-        appeal.setResolution(keyValuePairs.get("resolution")); // Allow null
+        appeal.setResolution(keyValuePairs.get("resolution"));
         appeal.setStatus(keyValuePairs.getOrDefault("status", "Создано"));
-        appeal.setNotes(keyValuePairs.get("notes")); // Allow null
+        appeal.setNotes(keyValuePairs.get("notes"));
         appeal.setPrinter(Boolean.parseBoolean(keyValuePairs.getOrDefault("printer", "false")));
+
+        if (keyValuePairs.containsKey("appUserId") && !"null".equalsIgnoreCase(keyValuePairs.get("appUserId"))) {
+            try {
+                Long userId = Long.parseLong(keyValuePairs.get("appUserId"));
+                AppUser appUser = new AppUser();
+                appUser.setId(userId);
+                appeal.setAppUser(appUser);
+            } catch (NumberFormatException e) {
+                System.err.println("Ошибка парсинга appUser");
+            }
+        }
 
         return appeal;
     }
